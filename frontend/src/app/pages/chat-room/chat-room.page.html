@@ -1,0 +1,7 @@
+<p>chat-room works!</p>
+<p>chat id {{ chatId }}</p>
+
+<div *ngIf="(data$ | async) as data">
+  <p>{{ data.id }} {{ data.value }}</p>
+</div>
+
