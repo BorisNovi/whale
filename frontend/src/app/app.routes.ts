@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
 import { LoginPageComponent } from './pages/login/login.page';
+import { NotFoundPageComponent } from './pages/not-found/not-found.page';
 
 export const routes: Routes = [
   { path: '', component: LoginPageComponent },
-  { path: 'chat/:id', loadComponent: () => import('./pages/chat-room/chat-room.page').then((c) => c.ChatRoomPage)}
+  { path: 'chat/:id', loadComponent: () => import('./pages/chat-room/chat-room.page').then((c) => c.ChatRoomPage)},
+  { path: '**', component: NotFoundPageComponent }
 ];
 
 
