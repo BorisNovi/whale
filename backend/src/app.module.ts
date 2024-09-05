@@ -1,7 +1,9 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { AuthModule } from './modules/auth/auth.module';
+import { LearnModule } from './modules/learn/learn.module';
+import { LogRequestsMiddleware } from './common';
+import { WsChatModule } from './modules/ws-chat/ws-chat.module';
 
 @Module({
   imports: [
@@ -16,8 +18,15 @@ import { SequelizeModule } from '@nestjs/sequelize';
     //   autoLoadModels: true,
     //   synchronize: true, // Don't trun on in prod
     // }),
+    AuthModule,
+    LearnModule,
+    WsChatModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogRequestsMiddleware).forRoutes('learn', 'auth');
+  }
+}
