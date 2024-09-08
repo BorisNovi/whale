@@ -1,1 +1,11 @@
-<p>login works!</p>
+
+<div class="login__wrapper">
+  <form [formGroup]="loginForm" class="login__form" (ngSubmit)="onSubmit()">
+    <span class="login__form__input">
+      <label for="username">Username</label>
+      <input formControlName="username" type="text" name="username">
+    </span>
+
+    <button class="login__form__submit" type="submit" [disabled]="!loginForm.valid">=></button>
+  </form>
+</div>
