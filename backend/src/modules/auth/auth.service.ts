@@ -2,32 +2,35 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
-  private onlineUsers: Set<string> = new Set();
+  private onlineUsers = new Map<string, string>();
 
   isUsernameOnline(username: string): boolean {
     return this.onlineUsers.has(username);
   }
 
-  login(username: string): { success: boolean; username: string } {
-    this.onlineUsers.add(username);
-    return { success: true, username };
+  login(username: string): {
+    username: string;
+    token: string;
+  } {
+    const token = this.generateToken(username);
+    this.onlineUsers.set(username, token);
+    return { username, token };
   }
 
   logout(username: string): { success: boolean; message: string } {
-    const isExisted = this.onlineUsers.has(username);
-
-    let message: string;
-
-    if (isExisted) {
+    if (this.onlineUsers.has(username)) {
       this.onlineUsers.delete(username);
-      message = `User ${username} logged out.`;
+      return { success: true, message: `User ${username} logged out` };
     } else {
-      message = `User ${username} not existed.`;
+      return { success: false, message: `User ${username} not found` };
     }
+  }
 
-    return {
-      success: true,
-      message: message,
-    };
+  validateUser(token: string): boolean {
+    return Array.from(this.onlineUsers.values()).includes(token);
+  }
+
+  private generateToken(username: string): string {
+    return `${username}-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
   }
 }
