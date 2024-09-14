@@ -1,4 +1,12 @@
-import { BadRequestException, Body, Controller, Get, ParseIntPipe, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { delay, of, timer } from 'rxjs';
 
@@ -12,7 +20,9 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body('username') username: string): Promise<any> {
+  async login(
+    @Body('username') username: string,
+  ): Promise<{ username: string; token: string }> {
     const isOnline = this.authService.isUsernameOnline(username);
 
     if (isOnline) {
@@ -25,7 +35,9 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Body('username') username: string): Promise<any> {
+  async logout(
+    @Body('username') username: string,
+  ): Promise<{ success: boolean; message: string }> {
     return this.authService.logout(username);
   }
 }

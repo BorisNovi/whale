@@ -7,12 +7,16 @@ import { IUserAuth } from '../interfaces';
 export class AuthService {
 
   private baseUrl = `http://localhost:3000`;
-  
+
   constructor(private httpClient: HttpClient) {
   }
 
   public logIn(username: string): Observable<IUserAuth> {
     return this.httpClient.post<IUserAuth>(`${this.baseUrl}/api/auth/login`, {username})
+  }
+
+  public logOut(username: string): Observable<{ success: boolean; message: string }> {
+    return this.httpClient.post<{ success: boolean; message: string }>(`${this.baseUrl}/api/auth/logout`, {username})
   }
 
   public getTest(info: { id: number, key: string }): Observable<any> {
