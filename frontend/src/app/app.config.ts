@@ -5,7 +5,7 @@ import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
-import { reducers } from './state';
+import { metaReducers, reducers } from './state';
 import { AuthEffects } from './state/auth/auth.effects';
 
 export const appConfig: ApplicationConfig = {
@@ -13,7 +13,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(),
-    provideStore(reducers),
+    provideStore(reducers, { metaReducers }),
     provideEffects(AuthEffects)
   ]
 };

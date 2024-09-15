@@ -16,8 +16,12 @@ export const initialState: AuthState = {
   error: null,
 };
 
+
+// TODO: заменить localstorage на сервис, который проверяет, браузер ли наша платформа.
+export const hydratedAuthState: AuthState = JSON.parse(localStorage.getItem('auth') || 'null') || initialState;
+
 export const authReducer = createReducer(
-  initialState,
+  hydratedAuthState,
   on(AuthActions.logIn, (state) => ({
     ...state,
     loading: true,

@@ -35,7 +35,8 @@ export class LoginPageComponent {
     .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe((authData) => {
       if (authData.isAuthenticated && authData.user) {
-        this.redirectLoginedUser(authData.user);
+        // this.redirectLoginedUser(authData.user);
+        this.redirectLoginedUser();
       }
     })
   }
@@ -45,7 +46,11 @@ export class LoginPageComponent {
     this.store.dispatch(AuthActions.logIn({ username }));
   }
 
-  private redirectLoginedUser(authData: IUserAuth): void {
-    this.router.navigate(['/chat/0', { state: authData }]);
+  // private redirectLoginedUser(authData: IUserAuth): void {
+  //   this.router.navigate(['/group-chat', { state: authData }]);
+  // }
+
+  private redirectLoginedUser(): void {
+    this.router.navigate(['/group-chat']);
   }
 }

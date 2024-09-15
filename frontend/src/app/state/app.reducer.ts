@@ -1,5 +1,5 @@
 import { ActionReducerMap, MetaReducer } from "@ngrx/store";
-import { authReducer, AuthState } from "./auth";
+import { authReducer, AuthState, localStorageMetaReducer } from "./auth";
 import { isDevMode } from "@angular/core";
 
 export interface AppState {
@@ -13,4 +13,6 @@ export const reducers: ActionReducerMap<AppState> = {
 };
 
 
-export const metaReducers: MetaReducer<AppState>[] = isDevMode() ? [] : [];
+// export const metaReducers: MetaReducer<AppState>[] = isDevMode() ? [] : [localStorageMetaReducer];
+
+export const metaReducers: MetaReducer<AppState>[] = [localStorageMetaReducer];

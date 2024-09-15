@@ -1,0 +1,7 @@
+<nav class="shell__navigation">
+  @if (isAuthentificated) {
+    <button class="shell__navigation__button" (click)="logout()" >Logout</button>
+  }
+</nav>
+
+<router-outlet></router-outlet>
