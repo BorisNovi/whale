@@ -38,10 +38,12 @@ export class AuthEffects {
       mergeMap(([action, user]) =>
         this.authService.logOut(user?.username || '').pipe(
           map((response) => {
-            if (response.success) {
+            console.log(response)
+            if (response.success) { // Found user or not
               return AuthActions.logOutSuccess({ message: response.message });
             } else {
-              return AuthActions.logOutFailure({ error: response.message });
+              console.log(response.message);
+              return AuthActions.logOutSuccess({ message: response.message });
             }
           }),
           catchError((error) => of(AuthActions.logOutFailure({ error: error.message })))

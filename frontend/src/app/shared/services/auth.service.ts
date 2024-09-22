@@ -1,12 +1,15 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IUserAuth } from '../interfaces';
+import { SocketService } from '.';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
   private baseUrl = `http://localhost:3000`;
+
+  private socketService = inject(SocketService);
 
   constructor(private httpClient: HttpClient) {
   }
@@ -16,6 +19,7 @@ export class AuthService {
   }
 
   public logOut(username: string): Observable<{ success: boolean; message: string }> {
+    this.socketService.disconnect();
     return this.httpClient.post<{ success: boolean; message: string }>(`${this.baseUrl}/api/auth/logout`, {username})
   }
 
@@ -38,6 +42,6 @@ export class AuthService {
     // }
 
     // return this.httpClient.get<any>(`${process.env.API_URL}/api/chats${id}`, { params });
-    return this.httpClient.get<any>(`http://localhost:3000/api/chats`, { params });
+    return this.httpClient.get<any>(`${this.baseUrl}/api/chats`, { params });
   }
 }

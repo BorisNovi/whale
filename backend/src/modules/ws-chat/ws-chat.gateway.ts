@@ -15,7 +15,15 @@ import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WsChatExceptionFilter } from './filters';
 import { AuthService } from '../auth/auth.service';
 
-@WebSocketGateway({ namespace: '/chat' })
+@WebSocketGateway({
+  namespace: '/chat',
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Authorization', 'Content-Type'],
+    credentials: true,
+  },
+})
 @UseFilters(new WsChatExceptionFilter())
 export class WsChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
