@@ -2,32 +2,24 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get,
-  ParseIntPipe,
   Post,
-  Query,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { delay, of, timer } from 'rxjs';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get('test')
-  async test(@Query('delay', ParseIntPipe) delayTime: number) {
-    return of('test').pipe(delay(delayTime));
-  }
-
   @Post('login')
   async login(
     @Body('username') username: string,
   ): Promise<{ username: string; token: string }> {
-    const isOnline = this.authService.isUsernameOnline(username);
+    username = username.trim().toLowerCase();
 
-    if (isOnline) {
+    if (this.authService.isUsernameOnline(username)) {
       throw new BadRequestException(
-        'This username is already online. Use other username.',
+        'This username is already online. Please use a different username.',
       );
     }
 
@@ -37,7 +29,20 @@ export class AuthController {
   @Post('logout')
   async logout(
     @Body('username') username: string,
+    @Body('token') token: string,
   ): Promise<{ success: boolean; message: string }> {
-    return this.authService.logout(username);
+    username = username.trim().toLowerCase();
+
+    if (!this.authService.validateUser(token)) {
+      throw new UnauthorizedException('Invalid token.');
+    }
+
+    if (this.authService.getUsername(token) !== username) {
+      throw new UnauthorizedException(
+        'Token does not match the given username.',
+      );
+    }
+
+    return this.authService.logout(username, token);
   }
 }

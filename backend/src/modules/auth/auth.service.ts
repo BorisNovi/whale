@@ -17,17 +17,30 @@ export class AuthService {
     return { username, token };
   }
 
-  logout(username: string): { success: boolean; message: string } {
-    if (this.onlineUsers.has(username)) {
+  logout(
+    username: string,
+    token: string,
+  ): { success: boolean; message: string } {
+    const storedToken = this.onlineUsers.get(username);
+    if (storedToken && storedToken === token) {
       this.onlineUsers.delete(username);
       return { success: true, message: `User ${username} logged out` };
     } else {
-      return { success: false, message: `User ${username} not found` };
+      return { success: false, message: `Invalid token or user not found` };
     }
   }
 
   validateUser(token: string): boolean {
     return Array.from(this.onlineUsers.values()).includes(token);
+  }
+
+  getUsername(token: string): string | null {
+    for (const [username, storedToken] of this.onlineUsers.entries()) {
+      if (storedToken === token) {
+        return username;
+      }
+    }
+    return null;
   }
 
   private generateToken(username: string): string {

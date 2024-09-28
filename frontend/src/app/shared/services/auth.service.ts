@@ -15,12 +15,13 @@ export class AuthService {
   }
 
   public logIn(username: string): Observable<IUserAuth> {
-    return this.httpClient.post<IUserAuth>(`${this.baseUrl}/api/auth/login`, {username})
+    return this.httpClient.post<IUserAuth>(`${this.baseUrl}/api/auth/login`, { username })
   }
 
-  public logOut(username: string): Observable<{ success: boolean; message: string }> {
+  public logOut(username: string, token: string): Observable<{ success: boolean; message: string }> {
     this.socketService.disconnect();
-    return this.httpClient.post<{ success: boolean; message: string }>(`${this.baseUrl}/api/auth/logout`, {username})
+    const body = { username, token };
+    return this.httpClient.post<{ success: boolean; message: string }>(`${this.baseUrl}/api/auth/logout`, body);
   }
 
   public getTest(info: { id: number, key: string }): Observable<any> {

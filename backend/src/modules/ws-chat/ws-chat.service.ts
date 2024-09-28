@@ -1,39 +1,46 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMessageDto } from './dto';
 import { IMessage } from './interfaces';
 
 @Injectable()
 export class WsChatService {
   private messages: IMessage[] = [];
-  private autoDeleteInterval: NodeJS.Timeout | null = null;
-  private autoDeleteDelay: number = 5; // min
+  private autoDeleteTimeout: NodeJS.Timeout | null = null;
+  private readonly autoDeleteDelayMinutes: number = 5; // min
 
-  saveMessage(message: CreateMessageDto) {
-    const serverTime = new Date().toISOString();
+  saveMessage(message: IMessage): void {
+    const messageWithTimestamp = this.addTimestampToMessage(message);
+    this.messages.push(messageWithTimestamp);
+    console.log(`Message saved:`, messageWithTimestamp);
 
-    const messageWithServerTime: IMessage = {
-      ...message,
-      timestamp: serverTime,
-    };
-
-    this.messages.push(messageWithServerTime);
-    this.deleteIfInactivity(this.autoDeleteDelay);
-
-    console.log(this.messages);
+    this.resetAutoDeleteTimer();
   }
 
   getAllMessages(count: number): IMessage[] {
-    return this.messages.slice(count);
+    return this.messages.slice(-count);
   }
 
-  private deleteIfInactivity(delay: number): void {
-    if (this.autoDeleteInterval) {
-      clearTimeout(this.autoDeleteInterval);
+  private addTimestampToMessage(message: IMessage): IMessage {
+    return {
+      ...message,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  private resetAutoDeleteTimer(): void {
+    if (this.autoDeleteTimeout) {
+      clearTimeout(this.autoDeleteTimeout);
     }
 
-    this.autoDeleteInterval = setTimeout(
-      () => (this.messages = []),
-      delay * 60 * 1000,
+    this.autoDeleteTimeout = setTimeout(
+      () => {
+        this.clearMessages();
+      },
+      this.autoDeleteDelayMinutes * 60 * 1000,
     );
+  }
+
+  private clearMessages(): void {
+    console.log(`Clearing all messages due to inactivity`);
+    this.messages = [];
   }
 }

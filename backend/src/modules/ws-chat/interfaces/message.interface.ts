@@ -1,5 +1,5 @@
-import { CreateMessageDto } from '../dto';
-
-export interface IMessage extends CreateMessageDto {
+export interface IMessage {
   timestamp: string;
+  username: string;
+  message: string;
 }

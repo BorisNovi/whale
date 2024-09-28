@@ -30,13 +30,12 @@ export class AuthEffects {
     )
   );
 
-  // TODO: в дальнейшем добавить передачу в запросе токена, чтобы нельзя было логаутить других юзеров с других аккаунтов
   logOut$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.logOut),
       withLatestFrom(this.store.select(selectUser)),
       mergeMap(([action, user]) =>
-        this.authService.logOut(user?.username || '').pipe(
+        this.authService.logOut(user?.username || '', user?.token || '').pipe(
           map((response) => {
             console.log(response)
             if (response.success) { // Found user or not

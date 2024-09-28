@@ -14,6 +14,7 @@ import { CreateMessageDto } from './dto';
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WsChatExceptionFilter } from './filters';
 import { AuthService } from '../auth/auth.service';
+import { IMessage } from './interfaces';
 
 @WebSocketGateway({
   namespace: '/chat',
@@ -35,28 +36,23 @@ export class WsChatGateway
     private readonly authService: AuthService,
   ) {}
 
-  afterInit(server: Server) {
+  afterInit() {
     console.log('WebSocket initialized');
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
-    const token = Array.isArray(client.handshake.query.token)
-      ? client.handshake.query.token[0]
-      : client.handshake.query.token;
-
-    console.log(this.authService.validateUser(token));
+  handleConnection(client: Socket) {
+    const token = this.extractToken(client);
 
     if (!this.authService.validateUser(token)) {
-      client.disconnect();
       console.log(`Client ${client.id} disconnected due to invalid token`);
+      client.disconnect();
       return;
     }
 
-    console.log(token);
     console.log(
       `Client connected: ${client.id}`,
-      `ip: ${client.request.socket.remoteAddress}`,
-      `token ${token}`,
+      `IP: ${client.request.socket.remoteAddress}`,
+      `Token: ${token}`,
     );
   }
 
@@ -67,22 +63,34 @@ export class WsChatGateway
   @SubscribeMessage('message')
   @UsePipes(new ValidationPipe({ transform: true }))
   handleMessage(
-    @MessageBody() message: CreateMessageDto,
+    @MessageBody() messageDto: CreateMessageDto,
     @ConnectedSocket() client: Socket,
   ): void {
-    const token = Array.isArray(client.handshake.query.token)
-      ? client.handshake.query.token[0]
-      : client.handshake.query.token;
+    const token = this.extractToken(client);
 
     if (!this.authService.validateUser(token)) {
       client.emit('error', 'Invalid token');
       return;
     }
 
+    const senderUsername = this.authService.getUsername(token);
+    const message: IMessage = {
+      ...messageDto,
+      username: senderUsername,
+      timestamp: new Date().toISOString(),
+    };
+
     this.wsChatService.saveMessage(message);
     console.log(
       `Message sent by user ${message.username}, client ID: ${client.id}`,
     );
+
     this.server.emit('message', message);
+  }
+
+  private extractToken(client: Socket): string {
+    return Array.isArray(client.handshake.query.token)
+      ? client.handshake.query.token[0]
+      : (client.handshake.query.token as string);
   }
 }

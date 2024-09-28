@@ -1,7 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from './modules/auth/auth.module';
-import { LearnModule } from './modules/learn/learn.module';
 import { LogRequestsMiddleware } from './common';
 import { WsChatModule } from './modules/ws-chat/ws-chat.module';
 
@@ -19,7 +18,6 @@ import { WsChatModule } from './modules/ws-chat/ws-chat.module';
     //   synchronize: true, // Don't trun on in prod
     // }),
     AuthModule,
-    LearnModule,
     WsChatModule,
   ],
   controllers: [],
@@ -27,6 +25,6 @@ import { WsChatModule } from './modules/ws-chat/ws-chat.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LogRequestsMiddleware).forRoutes('learn', 'auth');
+    consumer.apply(LogRequestsMiddleware).forRoutes('auth');
   }
 }
