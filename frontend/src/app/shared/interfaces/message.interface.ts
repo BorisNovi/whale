@@ -1,4 +1,6 @@
 export interface IMessage {
   message: string;
-  username: string;
+  bubbleColor?: string;
+  username?: string;
+  timestamp?: string;
 }

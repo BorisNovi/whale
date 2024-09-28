@@ -1,1 +1,109 @@
 /* You can add global styles to this file, and also import other style files */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+$color-primary: #0066ff;
+$color-secondary: #66ffff;
+$color-warn: #ff3300;
+$color-success: #00ff33;
+
+$color-monoA: #000;
+$color-monoB: #fff;
+
+$color-background: #ededed;
+
+// Темная тема
+$color-primary-dark-mode: #003399;
+$color-secondary-dark-mode: #009999;
+$color-warn-dark-mode: #660000;
+$color-success-dark-mode: #006600;
+
+$color-monoA-dark-mode: #fff;
+$color-monoB-dark-mode: #000;
+
+$color-background-dark-mode: #424242;
+
+// Функция для генерации цветов с альфа-каналом
+@function alpha-colors($color) {
+  @return (
+    A50: rgba($color, 0.05),
+    A100: rgba($color, 0.1),
+    A200: rgba($color, 0.2),
+    A300: rgba($color, 0.3),
+    A400: rgba($color, 0.4),
+    A500: rgba($color, 0.5),
+    A600: rgba($color, 0.6),
+    A700: rgba($color, 0.7),
+    A800: rgba($color, 0.8),
+    A900: rgba($color, 0.9)
+  );
+}
+
+:root {
+  --color-primary: #{$color-primary};
+  --color-secondary: #{$color-secondary};
+  --color-warn: #{$color-warn};
+  --color-success: #{$color-success};
+  --color-monoA: #{$color-monoA};
+  --color-monoB: #{$color-monoB};
+  --color-background: #{$color-background};
+
+  @each $key, $value in alpha-colors($color-primary) {
+    --color-primary-#{$key}: #{$value};
+  }
+  @each $key, $value in alpha-colors($color-secondary) {
+    --color-secondary-#{$key}: #{$value};
+  }
+  @each $key, $value in alpha-colors($color-warn) {
+    --color-warn-#{$key}: #{$value};
+  }
+  @each $key, $value in alpha-colors($color-success) {
+    --color-success-#{$key}: #{$value};
+  }
+  @each $key, $value in alpha-colors($color-monoA) {
+    --color-monoA-#{$key}: #{$value};
+  }
+  @each $key, $value in alpha-colors($color-monoB) {
+    --color-monoB-#{$key}: #{$value};
+  }
+}
+
+.dark {
+  --color-primary: #{$color-primary-dark-mode};
+  --color-secondary: #{$color-secondary-dark-mode};
+  --color-warn: #{$color-warn-dark-mode};
+  --color-success: #{$color-success-dark-mode};
+  --color-monoA: #{$color-monoA-dark-mode};
+  --color-monoB: #{$color-monoB-dark-mode};
+  --color-background: #{$color-background-dark-mode};
+
+  @each $key, $value in alpha-colors($color-primary-dark-mode) {
+    --color-primary-#{$key}: #{$value};
+  }
+  @each $key, $value in alpha-colors($color-secondary-dark-mode) {
+    --color-secondary-#{$key}: #{$value};
+  }
+  @each $key, $value in alpha-colors($color-warn-dark-mode) {
+    --color-warn-#{$key}: #{$value};
+  }
+  @each $key, $value in alpha-colors($color-success-dark-mode) {
+    --color-success-#{$key}: #{$value};
+  }
+  @each $key, $value in alpha-colors($color-monoA-dark-mode) {
+    --color-monoA-#{$key}: #{$value};
+  }
+  @each $key, $value in alpha-colors($color-monoB-dark-mode) {
+    --color-monoB-#{$key}: #{$value};
+  }
+}
+
+body {
+  height: 100vh;
+  margin: 0;
+  background-color: var(--color-background);
+  color: var(--color-monoA);
+  font-family: Arial, sans-serif;
+}

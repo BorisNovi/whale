@@ -1,0 +1,12 @@
+@mixin button-style() {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:disabled {
+    background-color: var(--color-monoA-A200);
+    pointer-events: none;
+  }
+}

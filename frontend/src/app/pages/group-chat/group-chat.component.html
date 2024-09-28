@@ -1,13 +1,1 @@
-
-<form [formGroup]="messageForm">
-  <input type="text" formControlName="message">
-  <button (click)="sendMessage()">send</button>
-</form>
-
-
-<div>
-  @for (message of messages; track $index) {
-    <div>{{message.username}}</div>
-    <div>{{message.message}}</div>
-  }
-</div>
+<whale-chat [messages]="messages" (messageSent)="sendMessage($event)"></whale-chat>

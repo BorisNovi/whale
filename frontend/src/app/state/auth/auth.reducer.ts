@@ -53,6 +53,7 @@ export const authReducer = createReducer(
   })),
   on(AuthActions.logOutFailure, (state, { error }) => ({
     ...state,
+    isAuthenticated: false,
     loading: false,
     error,
   }))

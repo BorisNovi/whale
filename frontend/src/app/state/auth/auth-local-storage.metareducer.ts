@@ -11,7 +11,7 @@ export function localStorageMetaReducer(reducer: ActionReducer<AppState>): Actio
       localStorage.setItem('auth', JSON.stringify(nextState.auth));
     }
 
-    if (action.type === AuthActions.logOutSuccess.type) {
+    if (action.type === AuthActions.logOutSuccess.type || action.type === AuthActions.logOutFailure.type) {
       localStorage.removeItem('auth');
     }
 

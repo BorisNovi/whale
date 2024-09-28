@@ -34,12 +34,13 @@ export class SocketService {
   }
 
   public sendMessage(event: string, data: IMessage) {
-    this.socket?.emit(event, data);
+    const { message } = data;
+    this.socket?.emit(event, { message });
   }
 
-  public onMessage(event: string): Observable<any> {
+  public onMessage(event: string): Observable<IMessage> {
     return new Observable((observer) => {
-      this.socket?.on(event, (message: any) => {
+      this.socket?.on(event, (message: IMessage) => {
         observer.next(message);
       });
     });

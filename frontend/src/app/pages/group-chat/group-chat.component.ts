@@ -1,18 +1,15 @@
 import { Component, DestroyRef, inject } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { selectUser } from '../../state';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { map, Observable } from 'rxjs';
-import { io, Socket } from 'socket.io-client';
-import { Socket as s } from 'ngx-socket-io';
+import { Observable } from 'rxjs';
 import { IMessage, SocketService } from '../../shared';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ChatComponent } from '../../components';
 
 @Component({
   selector: 'whale-group-chat',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, CommonModule],
+  imports: [ChatComponent],
   templateUrl: './group-chat.component.html',
   styleUrl: './group-chat.component.scss'
 })
@@ -30,14 +27,11 @@ export class GroupChatComponent {
       .subscribe(msg => this.messages.push(msg));
   }
 
-  public sendMessage() {
+  public sendMessage(message: IMessage) {
     const messageControl = this.messageForm.controls['message'];
-    const message = messageControl.value || '';
-    const msg = {
-      username: 'test username', // After all take username from back with message;
-      message
-    }
-    this.socketService.sendMessage('message', msg);
+    // const message = messageControl.value || '';
+
+    this.socketService.sendMessage('message', message );
     messageControl.setValue(null);
   }
 }
