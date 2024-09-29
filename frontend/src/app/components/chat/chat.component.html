@@ -1,14 +1,15 @@
 <div class="chat__container">
   <div class="chat__messages-container" #messagesContainer>
-    @for (message of messages; track $index) {
-      <div class="chat__message">
-        <div>{{message.username}}</div>
-        <div>{{message.message}}</div>
+    @for (message of messagesS(); track $index) {
+      <div class="chat__message" [ngStyle]="{ 'align-self': currentUser()?.username === message.username ? 'flex-end' : 'flex-start' }">
+        <div class="chat__message__username">{{message.username}}</div>
+        <div class="chat__message__text">{{message.message}}</div>
       </div>
     }
   </div>
   <div class="chat__input-container">
-    <input class="chat__input" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Enter message..." />
+    <textarea class="chat__input" name="messageInput" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Enter message...">
+    </textarea>
     <button class="chat__button" [disabled]="!newMessage.length" (click)="sendMessage()">Send</button>
   </div>
 </div>

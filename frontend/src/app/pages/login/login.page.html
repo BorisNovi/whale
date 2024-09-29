@@ -1,11 +1,8 @@
-
 <div class="login__wrapper">
+  <h2 class="login__header">Whale anonimous chat</h2>
   <form [formGroup]="loginForm" class="login__form" (ngSubmit)="onSubmit()">
-    <span class="login__form__input">
-      <label for="username">Username</label>
-      <input formControlName="username" type="text" name="username">
-    </span>
+    <input class="login__form__input" formControlName="username" type="text" name="username" placeholder="Just username...">
 
-    <button class="login__form__submit" type="submit" [disabled]="!loginForm.valid">=></button>
+    <button class="login__form__button" type="submit" [disabled]="!loginForm.valid">Log In</button>
   </form>
 </div>

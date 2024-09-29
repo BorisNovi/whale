@@ -1,4 +1,4 @@
-import { Component, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService, IUserAuth } from '../../shared';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -13,11 +13,12 @@ import { select, Store } from '@ngrx/store';
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './login.page.html',
-  styleUrl: './login.page.scss'
+  styleUrl: './login.page.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginPageComponent {
 
-  public userAuthData: IUserAuth | null = null; // TODO: Add username and token to state manager after all
+  public userAuthData: IUserAuth | null = null;
   public authState$: Observable<AuthState>;
 
   public loginForm = new FormGroup({

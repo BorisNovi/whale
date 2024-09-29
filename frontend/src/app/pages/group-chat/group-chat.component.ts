@@ -1,9 +1,7 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { IMessage, SocketService } from '../../shared';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { ChatComponent } from '../../components';
 
 @Component({
@@ -11,27 +9,22 @@ import { ChatComponent } from '../../components';
   standalone: true,
   imports: [ChatComponent],
   templateUrl: './group-chat.component.html',
-  styleUrl: './group-chat.component.scss'
+  styleUrl: './group-chat.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GroupChatComponent {
+export class GroupChatComponent implements OnInit {
   private socketService = inject(SocketService);
-  public messages: IMessage[] = [];
+  private destroyRef = inject(DestroyRef);
 
-  public messageForm = new FormGroup({
-    message: new FormControl('', [Validators.required])
-  });
+  public messagesS = signal<IMessage[]>([]);
 
-  constructor(private destroyRef: DestroyRef) {
+  public ngOnInit(): void {
     this.socketService.onMessage('message')
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(msg => this.messages.push(msg));
+      .subscribe(msg => this.messagesS.update(messages => [msg, ...messages]));
   }
 
   public sendMessage(message: IMessage) {
-    const messageControl = this.messageForm.controls['message'];
-    // const message = messageControl.value || '';
-
-    this.socketService.sendMessage('message', message );
-    messageControl.setValue(null);
+    this.socketService.sendMessage('message', message);
   }
 }

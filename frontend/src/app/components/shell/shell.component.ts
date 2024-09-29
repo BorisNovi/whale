@@ -1,6 +1,6 @@
-import { Component, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { selectAuthState, AuthActions, AuthState } from '../../state';
 import { Observable } from 'rxjs';
@@ -10,7 +10,8 @@ import { Observable } from 'rxjs';
   standalone: true,
   imports: [RouterOutlet],
   templateUrl: './shell.component.html',
-  styleUrl: './shell.component.scss'
+  styleUrl: './shell.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ShellComponent {
   public authState$: Observable<AuthState>;
