@@ -74,10 +74,12 @@ export class WsChatGateway
     }
 
     const senderUsername = this.authService.getUsername(token);
+    const senderColor = this.authService.getUserColor(token);
     const message: IMessage = {
       ...messageDto,
       username: senderUsername,
       timestamp: new Date().toISOString(),
+      color: senderColor,
     };
 
     this.wsChatService.saveMessage(message);

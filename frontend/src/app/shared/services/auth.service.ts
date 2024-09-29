@@ -23,26 +23,4 @@ export class AuthService {
     const body = { username, token };
     return this.httpClient.post<{ success: boolean; message: string }>(`${this.baseUrl}/api/auth/logout`, body);
   }
-
-  public getTest(info: { id: number, key: string }): Observable<any> {
-    const { id, key } = info;
-
-    let params = new HttpParams({
-      fromObject: {
-        ...(id && { id }),
-        ...(key && { key }),
-      }
-    });
-
-    // if (someArr?.length) {
-    //   params = params.set('someArrParams', someArr.toString());
-    // }
-
-    // if (users?.length) {
-    //   params = params.set('usersIds', users.map(item => item.id).toString());
-    // }
-
-    // return this.httpClient.get<any>(`${process.env.API_URL}/api/chats${id}`, { params });
-    return this.httpClient.get<any>(`${this.baseUrl}/api/chats`, { params });
-  }
 }

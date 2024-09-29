@@ -19,6 +19,10 @@ export class GroupChatComponent implements OnInit {
   public messagesS = signal<IMessage[]>([]);
 
   public ngOnInit(): void {
+    this.socketService.getMessages()
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe(msgList => this.messagesS.update(_ => [...msgList.reverse()]));
+
     this.socketService.onMessage('message')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(msg => this.messagesS.update(messages => [msg, ...messages]));

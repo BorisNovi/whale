@@ -15,8 +15,6 @@ export class AuthController {
   async login(
     @Body('username') username: string,
   ): Promise<{ username: string; token: string }> {
-    username = username.trim().toLowerCase();
-
     if (this.authService.isUsernameOnline(username)) {
       throw new BadRequestException(
         'This username is already online. Please use a different username.',
@@ -31,18 +29,12 @@ export class AuthController {
     @Body('username') username: string,
     @Body('token') token: string,
   ): Promise<{ success: boolean; message: string }> {
-    username = username.trim().toLowerCase();
-
     if (!this.authService.validateUser(token)) {
       throw new UnauthorizedException('Invalid token.');
     }
 
-    if (this.authService.getUsername(token) !== username) {
-      throw new UnauthorizedException(
-        'Token does not match the given username.',
-      );
-    }
+    console.log(`Bye ${username}!`);
 
-    return this.authService.logout(username, token);
+    return this.authService.logout(token);
   }
 }

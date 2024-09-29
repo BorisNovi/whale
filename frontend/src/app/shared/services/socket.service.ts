@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { selectUser } from '../../state';
 import { IMessage, IUserAuth } from '../interfaces';
 import { Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 
 @Injectable({
@@ -13,19 +14,23 @@ import { Observable } from 'rxjs';
 export class SocketService {
   private socket: Socket | null = null;
   private store = inject(Store);
+  private http = inject(HttpClient);
+
+  private baseUrl = `http://localhost:3000`;
+  private token = '';
 
   constructor() { 
     this.store.select(selectUser).subscribe((user: IUserAuth | null) => {
-      const token = user?.token || '';
+      this.token = user?.token || '';
 
       if (this.socket) {
         this.socket.disconnect();
       }
 
       const config = {
-        url: 'http://localhost:3000/chat',
+        url: `${this.baseUrl}/chat`,
         options: {
-          query: { token }
+          query: { token: this.token }
         }
       };
 
@@ -44,6 +49,17 @@ export class SocketService {
         observer.next(message);
       });
     });
+  }
+
+  public getMessages(count?: number): Observable<IMessage[]> {
+    let params = new HttpParams({
+      fromObject: {
+        token: this.token,
+        ...(count && { count }),
+      }
+    });
+
+    return this.http.get<IMessage[]>(`${this.baseUrl}/api/chat/list`, { params });
   }
 
   public disconnect() {
