@@ -34,8 +34,8 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(AuthActions.logOut),
       withLatestFrom(this.store.select(selectUser)),
-      mergeMap(([action, user]) =>
-        this.authService.logOut(user?.username || '', user?.token || '').pipe(
+      mergeMap(([action, user]) => // TODO: убрать юзера отсюда
+        this.authService.logOut().pipe(
           map((response) => {
             console.log(response)
             if (response.success) { // Found user or not

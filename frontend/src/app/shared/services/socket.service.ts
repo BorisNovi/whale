@@ -1,11 +1,11 @@
-import { inject, Injectable } from '@angular/core';
+import { effect, inject, Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 
 import { Store } from '@ngrx/store';
 import { selectUser } from '../../state';
 import { IMessage, IUserAuth } from '../interfaces';
 import { Observable } from 'rxjs';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 
 @Injectable({
@@ -17,25 +17,32 @@ export class SocketService {
   private http = inject(HttpClient);
 
   private baseUrl = `http://localhost:3000`;
-  private token = '';
 
   constructor() { 
-    this.store.select(selectUser).subscribe((user: IUserAuth | null) => {
-      this.token = user?.token || '';
+    effect(() => {
+      const user = this.store.selectSignal(selectUser)();
 
-      if (this.socket) {
-        this.socket.disconnect();
+      console.log('in socket service', user)
+      
+      if (user) {
+        this.initializeSocket(user.token.accessToken);
       }
-
-      const config = {
-        url: `${this.baseUrl}/chat`,
-        options: {
-          query: { token: this.token }
-        }
-      };
-
-      this.socket = io(config.url, config.options);
     });
+  }
+
+  private initializeSocket(token: string) {
+    if (this.socket) {
+      this.socket.disconnect();
+    }
+
+    const config = {
+      url: `${this.baseUrl}/chat`,
+      options: {
+        query: { token }
+      }
+    };
+
+    this.socket = io(config.url, config.options);
   }
 
   public sendMessage(event: string, data: IMessage) {
@@ -51,10 +58,9 @@ export class SocketService {
     });
   }
 
-  public getMessages(count?: number): Observable<IMessage[]> {
+  public getMessages(count?: number): Observable<IMessage[]> {    
     let params = new HttpParams({
       fromObject: {
-        token: this.token,
         ...(count && { count }),
       }
     });
