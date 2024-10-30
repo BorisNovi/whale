@@ -6,7 +6,7 @@ import { selectUser } from '../../state';
 import { IMessage, IUserAuth } from '../interfaces';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +15,6 @@ export class SocketService {
   private socket: Socket | null = null;
   private store = inject(Store);
   private http = inject(HttpClient);
-
-  private baseUrl = `http://localhost:3000`;
 
   constructor() { 
     effect(() => {
@@ -36,7 +34,7 @@ export class SocketService {
     }
 
     const config = {
-      url: `${this.baseUrl}/chat`,
+      url: `${environment.baseUrl}/chat`,
       options: {
         query: { token }
       }
@@ -65,7 +63,7 @@ export class SocketService {
       }
     });
 
-    return this.http.get<IMessage[]>(`${this.baseUrl}/api/chat/list`, { params });
+    return this.http.get<IMessage[]>(`${environment.baseUrl}/api/chat/list`, { params });
   }
 
   public disconnect() {

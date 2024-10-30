@@ -40,6 +40,7 @@ export class WsChatGateway
     console.log('WebSocket initialized');
   }
 
+  // TODO: добавить отдельный гуард для сокета
   handleConnection(client: Socket) {
     const token = this.extractToken(client);
 

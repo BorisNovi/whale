@@ -5,31 +5,29 @@ import { IToken, IUserAuth } from '../interfaces';
 import { SocketService } from '.';
 import { Store } from '@ngrx/store';
 import { selectUser } from '../../state';
+import { environment } from '@environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-
-  private baseUrl = `http://localhost:3000`;
-
   private socketService = inject(SocketService);
   private store = inject(Store);
   private userS = this.store.selectSignal(selectUser);
 
   constructor(private httpClient: HttpClient) {
+    console.log('env check', environment.baseUrl);
   }
 
   public logIn(username: string): Observable<IUserAuth> {
-    return this.httpClient.post<IUserAuth>(`${this.baseUrl}/api/auth/login`, { username })
+    return this.httpClient.post<IUserAuth>(`${environment.baseUrl}/api/auth/login`, { username })
   }
 
-  // TODO: Сделать через интерцептор
   public logOut(): Observable<{ success: boolean; message: string }> {
     const userData = this.userS();
     this.socketService.disconnect();
 
     const body = { username: userData?.username };
 
-    return this.httpClient.post<{ success: boolean; message: string }>(`${this.baseUrl}/api/auth/logout`, body);
+    return this.httpClient.post<{ success: boolean; message: string }>(`${environment.baseUrl}/api/auth/logout`, body);
   }
 
   public getToken(): IToken | undefined {
@@ -40,6 +38,6 @@ export class AuthService {
     const userData = this.userS();
     const body = { refreshToken: userData?.token.refreshToken };
 
-    return this.httpClient.post<IToken>(`${this.baseUrl}/api/auth/refreshToken`, body);
+    return this.httpClient.post<IToken>(`${environment.baseUrl}/api/auth/refreshToken`, body);
   }
 }
