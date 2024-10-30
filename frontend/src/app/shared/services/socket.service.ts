@@ -28,7 +28,7 @@ export class SocketService {
     });
   }
 
-  private initializeSocket(token: string) {
+  private initializeSocket(accessToken: string) {
     if (this.socket) {
       this.socket.disconnect();
     }
@@ -36,7 +36,9 @@ export class SocketService {
     const config = {
       url: `${environment.baseUrl}/chat`,
       options: {
-        query: { token }
+        query: {
+          Authorization: accessToken
+        }
       }
     };
 
