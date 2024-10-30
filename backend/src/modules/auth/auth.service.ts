@@ -5,7 +5,7 @@ import { IToken } from './interfaces';
 @Injectable()
 export class AuthService {
   private onlineUsers = new Map<string, { username: string; color: string }>();
-  private readonly secretKey = 'testSecretKey'; // TODO: проверить так, затем брать из .env
+  private readonly secretKey = process.env.JWT_SECRET_KEY;
 
   isUsernameOnline(username: string): boolean {
     return Array.from(this.onlineUsers.values()).some(
