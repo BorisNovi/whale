@@ -4,11 +4,12 @@ import { Router, RouterOutlet } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { selectAuthState, AuthActions, AuthState } from '../../state';
 import { Observable } from 'rxjs';
+import { NotificationLineComponent } from '../notification-line/notification-line.component';
 
 @Component({
   selector: 'whale-shell',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NotificationLineComponent],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

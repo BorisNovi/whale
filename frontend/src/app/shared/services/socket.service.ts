@@ -7,6 +7,7 @@ import { IMessage, IUserAuth } from '../interfaces';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from '@environments/environment';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class SocketService {
   private socket: Socket | null = null;
   private store = inject(Store);
   private http = inject(HttpClient);
+  private notificationService = inject(NotificationService);
 
   constructor() { 
     effect(() => {
@@ -28,7 +30,7 @@ export class SocketService {
     });
   }
 
-  private initializeSocket(accessToken: string) {
+  private initializeSocket(accessToken: string): void {
     if (this.socket) {
       this.socket.disconnect();
     }
@@ -43,9 +45,17 @@ export class SocketService {
     };
 
     this.socket = io(config.url, config.options);
+  
+    this.socket.on('connect', () => {
+      this.notificationService.showNotification({ text: 'Socket connected', type: 'success', closeTimeout: 1500 });
+    });
+
+    this.socket.on('disconnect', () => {
+      this.notificationService.showNotification({ text: 'Socket disconnected', type: 'info', closeTimeout: 1500 });
+    });
   }
 
-  public sendMessage(event: string, data: IMessage) {
+  public sendMessage(event: string, data: IMessage): void {
     const { message } = data;
     this.socket?.emit(event, { message });
   }
@@ -68,7 +78,7 @@ export class SocketService {
     return this.http.get<IMessage[]>(`${environment.baseUrl}/api/chat/list`, { params });
   }
 
-  public disconnect() {
+  public disconnect(): void {
     this.socket?.disconnect();
   }
 }
