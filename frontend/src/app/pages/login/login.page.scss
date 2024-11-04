@@ -12,6 +12,7 @@
   &__wrapper {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 30px;
   }
 
@@ -20,7 +21,14 @@
     color: var(--color-primary-A800);
   }
 
+  &__logo {
+    width: 120px;
+    height: 120px;
+    color: var(--color-primary-A800);
+  }
+
   &__form {
+    width: 100%;
     border: 2px solid var(--color-primary-A700);
     display: flex;
     justify-content: flex-start;

@@ -50,6 +50,6 @@ export class AuthController {
   async refreshToken(
     @Body('refreshToken') refreshToken: string,
   ): Promise<IToken> {
-    return this.authService.generateToken(refreshToken);
+    return this.authService.refreshToken(refreshToken);
   }
 }

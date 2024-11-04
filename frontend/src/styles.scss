@@ -5,15 +5,16 @@
   box-sizing: border-box;
 }
 
-$color-primary: #0066ff;
-$color-secondary: #66ffff;
-$color-warn: #ff3300;
-$color-success: #00ff33;
+$color-primary: #0066ff; // Основной цвет (кнопки, рамки, заголовки иногда)
+$color-secondary: #66ffff; // Дополнительный цвет (некоторые кнопки, информационные попапы)
+$color-warn: #ff3300; // Предупреждающий цвет (ошибки, необратимые действия)
+$color-success: #00ff33; // Успешный цвет (что-то выполнено без ошибки, подтверждение)
 
-$color-monoA: #000;
-$color-monoB: #fff;
+// Используется для текста, подложек, выключенных состояний
+$color-monoA: #000; // Монохроный основной (темный в светлой теме, светлый в темной)
+$color-monoB: #fff; // Монохромный дополнительный (то же, что у основного, но наоборот)
 
-$color-background: #ededed;
+$color-background: #ededed; // Задний фон
 
 // Темная тема
 $color-primary-dark-mode: #003399;

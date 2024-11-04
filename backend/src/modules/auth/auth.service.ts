@@ -56,10 +56,10 @@ export class AuthService {
     return userInfo ? userInfo.color : null;
   }
 
-  public generateToken(username: string): IToken {
+  private generateToken(username: string): IToken {
     const accessPayload = { username, type: 'access' };
     const accessToken = jwt.sign(accessPayload, this.secretKey, {
-      expiresIn: '15m',
+      expiresIn: '60m',
     });
 
     const refreshPayload = { username, type: 'refresh' };
