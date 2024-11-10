@@ -14,8 +14,12 @@ export class WsAuthGuard implements CanActivate {
     const client: Socket = context.switchToWs().getClient<Socket>();
     const accessToken = this.extractTokenFromHandshake(client);
 
+    console.log('TOKEN IN WS AUTH: ', accessToken);
     if (!accessToken || !this.authService.validateUser(accessToken)) {
-      throw new WsException('Invalid or missing token');
+      throw new WsException({
+        message: 'Authorization: Invalid or missing token',
+        code: 401,
+      });
     }
 
     return true;

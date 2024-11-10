@@ -2,7 +2,7 @@ import { effect, inject, Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 
 import { Store } from '@ngrx/store';
-import { selectUser } from '../../state';
+import { AuthActions, selectUser } from '../../state';
 import { IMessage, IUserAuth } from '../interfaces';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
@@ -30,11 +30,7 @@ export class SocketService {
     });
   }
 
-  private initializeSocket(accessToken: string): void {
-    if (this.socket) {
-      this.socket.disconnect();
-    }
-
+  public initializeSocket(accessToken: string): void {
     const config = {
       url: `${environment.baseUrl}/chat`,
       options: {
@@ -52,6 +48,13 @@ export class SocketService {
 
     this.socket.on('disconnect', () => {
       this.notificationService.showNotification({ text: 'Socket disconnected', type: 'info', closeTimeout: 1500 });
+    });
+
+    this.socket.on('error', (error) => {
+      this.notificationService.showNotification({ text: error.message, type: 'error', closeTimeout: 1500 });
+      if (error.code === 401) {
+        this.store.dispatch(AuthActions.refreshToken());
+      }
     });
   }
 
@@ -81,4 +84,5 @@ export class SocketService {
   public disconnect(): void {
     this.socket?.disconnect();
   }
+  
 }

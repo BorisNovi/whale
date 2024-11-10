@@ -1,17 +1,17 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthService, NotificationService } from '../services';
-import { catchError, switchMap, throwError, of } from 'rxjs';
-import { AuthActions } from 'app/state';
+import { NotificationService } from '../services';
+import { catchError, switchMap, throwError, timer } from 'rxjs';
+import { AuthActions, selectUser } from 'app/state';
 import { Store } from '@ngrx/store';
 
 let isRefreshing = false;
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
   const notificationService = inject(NotificationService);
   const store = inject(Store);
-  const token = authService.getToken();
+
+  const token = store.selectSignal(selectUser)()?.token;
 
   let authReq = req.clone({
     setHeaders: {
@@ -24,26 +24,31 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       if (err.status === 401 && !isRefreshing) {
         isRefreshing = true;
 
-        return authService.refreshToken().pipe(
-          switchMap(newToken => {
-            isRefreshing = false;
-            const refreshedReq = req.clone({
-              setHeaders: {
-                Authorization: `Bearer ${newToken.accessToken}`,
-              },
-            });
-            return next(refreshedReq);
-          }),
-          catchError(refreshErr => {
-            isRefreshing = false;
-            notificationService.showNotification({
-              text: 'Authorization error',
-              type: 'error',
-              closeTimeout: 1500,
-            });
-            // store.dispatch(AuthActions.logOut());
-            return throwError(() => new Error(refreshErr.message));
-          })
+        store.dispatch(AuthActions.refreshToken());
+
+        return timer(500).pipe( // TODO: ИЗБАВИТЬСЯ ОТ ЗАДЕРЖКИ
+          switchMap(() => 
+            store.select(selectUser).pipe(
+              switchMap(user => {
+                isRefreshing = false;
+                const refreshedReq = req.clone({
+                  setHeaders: {
+                    Authorization: `Bearer ${user?.token.accessToken}`,
+                  },
+                });
+                return next(refreshedReq);
+              }),
+              catchError(refreshErr => {
+                isRefreshing = false;
+                notificationService.showNotification({
+                  text: 'Authorization error',
+                  type: 'error',
+                  closeTimeout: 1500,
+                });
+                return throwError(() => new Error(refreshErr.message));
+              })
+            )
+          )
         );
       }
       return throwError(() => new Error(err));

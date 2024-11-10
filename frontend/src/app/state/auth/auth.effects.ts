@@ -2,16 +2,13 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { AuthService } from '../../shared';
 import { AuthActions } from './auth.actions';
-import { catchError, map, mergeMap, of, tap, withLatestFrom } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { selectUser } from './auth.selectors';
+import { catchError, map, mergeMap, of, tap } from 'rxjs';
 
 @Injectable()
 export class AuthEffects {
   constructor(private authService: AuthService) {}
 
   private actions$ = inject(Actions);
-  private store = inject(Store);
 
   logActions$ = createEffect(() =>
     this.actions$.pipe(
@@ -33,11 +30,9 @@ export class AuthEffects {
   logOut$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.logOut),
-      withLatestFrom(this.store.select(selectUser)),
-      mergeMap(([action, user]) => // TODO: убрать юзера отсюда
+      mergeMap(() =>
         this.authService.logOut().pipe(
           map((response) => {
-            console.log(response)
             if (response.success) { // Found user or not
               return AuthActions.logOutSuccess({ message: response.message });
             } else {
@@ -50,4 +45,18 @@ export class AuthEffects {
       )
     )
   );
+
+  refreshToken$ = createEffect(() => 
+    this.actions$.pipe(
+      ofType(AuthActions.refreshToken),
+      mergeMap(() => 
+        this.authService.refreshToken().pipe(
+          map((response) => {
+            return AuthActions.refreshTokenSuccess({ token: response })
+          }),
+          catchError((error) => of(AuthActions.refreshTokenFailure({ error: error.message })))
+        )
+      )
+    )
+  )
 }

@@ -1,5 +1,5 @@
 import { createAction, createActionGroup, emptyProps, props } from '@ngrx/store';
-import { IUserAuth } from '../../shared';
+import { IToken, IUserAuth } from '../../shared';
 
 export const AuthActions = createActionGroup({
   source: 'Auth',
@@ -10,5 +10,8 @@ export const AuthActions = createActionGroup({
     'Log Out': emptyProps(),
     'Log Out Success': props<{ message: string }>(),
     'Log Out Failure': props<{ error: string }>(),
+    'Refresh Token': emptyProps(),
+    'Refresh Token Success': props<{ token: IToken }>(),
+    'Refresh Token Failure': props<{ error: string }>()
   }
 });

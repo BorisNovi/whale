@@ -50,11 +50,11 @@ export class WsChatGateway
     const token = this.extractToken(client);
 
     // Если юзер утратил токен, то отключаем его, иначе он сможет видеть сообщения, но не сможет писать
-    if (!this.authService.validateUser(token)) {
-      console.log(`Client ${client.id} disconnected due to invalid token`);
-      client.disconnect();
-      return;
-    }
+    // if (!this.authService.validateUser(token)) {
+    //   console.log(`Client ${client.id} disconnected due to invalid token`);
+    //   client.disconnect();
+    //   return;
+    // }
 
     console.log(
       `Client ${client.id} connected`,
