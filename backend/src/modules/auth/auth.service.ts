@@ -59,7 +59,7 @@ export class AuthService {
   private generateToken(username: string): IToken {
     const accessPayload = { username, type: 'access' };
     const accessToken = jwt.sign(accessPayload, this.secretKey, {
-      expiresIn: '60m',
+      expiresIn: '15m',
     });
 
     const refreshPayload = { username, type: 'refresh' };

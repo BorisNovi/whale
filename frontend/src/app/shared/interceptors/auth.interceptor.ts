@@ -1,7 +1,7 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { NotificationService } from '../services';
-import { catchError, switchMap, throwError, timer } from 'rxjs';
+import { catchError, filter, skip, switchMap, tap, throwError } from 'rxjs';
 import { AuthActions, selectUser } from 'app/state';
 import { Store } from '@ngrx/store';
 
@@ -26,30 +26,29 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
         store.dispatch(AuthActions.refreshToken());
 
-        return timer(500).pipe( // TODO: ИЗБАВИТЬСЯ ОТ ЗАДЕРЖКИ
-          switchMap(() => 
-            store.select(selectUser).pipe(
-              switchMap(user => {
-                isRefreshing = false;
-                const refreshedReq = req.clone({
-                  setHeaders: {
-                    Authorization: `Bearer ${user?.token.accessToken}`,
-                  },
-                });
-                return next(refreshedReq);
-              }),
-              catchError(refreshErr => {
-                isRefreshing = false;
-                notificationService.showNotification({
-                  text: 'Authorization error',
-                  type: 'error',
-                  closeTimeout: 1500,
-                });
-                return throwError(() => new Error(refreshErr.message));
-              })
-            )
+        return store.select(selectUser)
+          .pipe(
+            filter(isComplete => !!isComplete),
+            skip(1),
+            switchMap(user => {
+              isRefreshing = false;
+              const refreshedReq = req.clone({
+                setHeaders: {
+                  Authorization: `Bearer ${user?.token.accessToken}`,
+                },
+              });
+              return next(refreshedReq);
+            }),
+            catchError(refreshErr => {
+              isRefreshing = false;
+              notificationService.showNotification({
+                text: 'Authorization error',
+                type: 'error',
+                closeTimeout: 1500,
+              });
+              return throwError(() => new Error(refreshErr.message));
+            })
           )
-        );
       }
       return throwError(() => new Error(err));
     })

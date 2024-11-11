@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { Store } from '@ngrx/store';
 import { AuthActions, selectUser } from '../../state';
 import { IMessage, IUserAuth } from '../interfaces';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { NotificationService } from './notification.service';
@@ -52,7 +52,7 @@ export class SocketService {
 
     this.socket.on('error', (error) => {
       this.notificationService.showNotification({ text: error.message, type: 'error', closeTimeout: 1500 });
-      if (error.code === 401) {
+      if (error.error.code === 401) {
         this.store.dispatch(AuthActions.refreshToken());
       }
     });
