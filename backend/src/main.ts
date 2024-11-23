@@ -15,7 +15,14 @@ async function bootstrap() {
     .setTitle('Whale')
     .setDescription('API for whale messenger')
     .setVersion('0.0.1')
-    .addTag('whaleTestTag')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
+    )
     .build();
 
   const documentfactory = () =>
