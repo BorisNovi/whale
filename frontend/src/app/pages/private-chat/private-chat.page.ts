@@ -25,17 +25,16 @@ export class PrivateChatPage implements OnInit {
   public ngOnInit(): void {
     this.chatId = this.route.snapshot.paramMap.get('id') || '';
 
-    // this.socketService.getMessages()
-    // .pipe(takeUntilDestroyed(this.destroyRef))
-    // .subscribe(msgList => this.messagesS.update(_ => [...msgList.reverse()]));
+    this.socketService.sendMessage('joinPrivateChat', {},this.chatId);
 
-    // this.socketService.onMessage('message')
-    //   .pipe(takeUntilDestroyed(this.destroyRef))
-    //   .subscribe(msg => this.messagesS.update(messages => [msg, ...messages]));
+
+    this.socketService.onMessage('privateMessage')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(msg => this.messagesS.update(messages => [msg, ...messages]));
   }
 
   public sendMessage(message: IMessage) {
-    this.socketService.sendMessage('message', message);
+    this.socketService.sendMessage('privateMessage', message, this.chatId);
   }
 
 }

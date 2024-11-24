@@ -4,10 +4,17 @@ import { WsChatGateway } from './ws-chat.gateway';
 import { WsChatController } from './ws-chat.controller';
 import { AuthModule } from '../auth/auth.module';
 import { AuthGuard, WsAuthGuard } from '../../common';
+import { PrivateChatGateway } from './private-chat.gateway';
 
 @Module({
   controllers: [WsChatController],
-  providers: [WsChatGateway, WsChatService, AuthGuard, WsAuthGuard],
+  providers: [
+    WsChatGateway,
+    PrivateChatGateway,
+    WsChatService,
+    AuthGuard,
+    WsAuthGuard,
+  ],
   imports: [AuthModule],
 })
 export class WsChatModule {}

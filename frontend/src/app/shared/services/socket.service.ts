@@ -58,9 +58,10 @@ export class SocketService {
     });
   }
 
-  public sendMessage(event: string, data: IMessage): void {
+  // TODO: сделать универсальным
+  public sendMessage(event: string, data: Partial<IMessage>, chatId: string): void {
     const { message } = data;
-    this.socket?.emit(event, { message });
+    this.socket?.emit(event, { message, chatId });
   }
 
   public onMessage(event: string): Observable<IMessage> {

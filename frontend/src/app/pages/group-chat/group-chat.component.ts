@@ -31,7 +31,7 @@ export class GroupChatComponent implements OnInit {
   }
 
   public sendMessage(message: IMessage): void {
-    this.socketService.sendMessage('message', message);
+    this.socketService.sendMessage('message', message, 'public');
   }
 
   public redirectToPrivateChat(pivateChatId: string): void {
