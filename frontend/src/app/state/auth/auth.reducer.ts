@@ -66,6 +66,7 @@ export const authReducer = createReducer(
     ...state,
     user: {
       username: state.user!.username,
+      userId: state.user!.userId,
       token
     },
     loading: false,

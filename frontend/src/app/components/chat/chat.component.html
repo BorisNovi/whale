@@ -4,7 +4,7 @@
       <div class="chat__message" [ngStyle]="{
         'align-self': currentUser()?.username === message.username ? 'flex-end' : 'flex-start'
         }">
-        <div class="chat__message__username">
+        <div class="chat__message__username" (click)="onUsernameClick(message.userId)">
           <span class="chat__message__indicator" [ngStyle]="{'background-color': message.color}"></span>
           <span>{{message.username}}</span>
         </div>

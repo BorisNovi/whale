@@ -41,6 +41,8 @@
 
     &__username {
       @include text-caption();
+      cursor: pointer;
+      width: fit-content;
     }
 
     &__text {

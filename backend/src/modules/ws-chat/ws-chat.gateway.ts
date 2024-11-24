@@ -75,13 +75,13 @@ export class WsChatGateway
   ): void {
     const token = this.extractToken(client);
 
-    const senderUsername = this.authService.getUsername(token);
-    const senderColor = this.authService.getUserColor(token);
+    const senderData = this.authService.getUserData(token);
     const message: IMessage = {
       ...messageDto,
-      username: senderUsername,
+      username: senderData.username,
+      userId: senderData.userId,
       timestamp: new Date().toISOString(),
-      color: senderColor,
+      color: senderData.color,
     };
 
     this.wsChatService.saveMessage(message);

@@ -39,6 +39,7 @@ export class AuthController {
       type: 'object',
       properties: {
         username: { type: 'string' },
+        userId: { type: 'string' },
         token: {
           type: 'object',
           properties: {
@@ -46,6 +47,7 @@ export class AuthController {
             refreshToken: { type: 'string' },
           },
         },
+        color: { type: 'string' },
       },
     },
   })

@@ -9,7 +9,8 @@ export const routes: Routes = [
     path: '', component: ShellComponent, children: [
       { path: '', canActivate: [loginGuard], pathMatch: 'full', component: LoginPageComponent },
       { path: 'group-chat', canActivate: [authenticatedGuard], loadComponent: () => import('./pages/group-chat/group-chat.component').then((c) => c.GroupChatComponent)},
-      { path: 'chat/:id', canActivate: [authenticatedGuard], loadComponent: () => import('./pages/chat-room/chat-room.page').then((c) => c.ChatRoomPage)},
+      { path: 'chat/:id', canActivate: [authenticatedGuard], loadComponent: () => import('./pages/private-chat/private-chat.page').then((c) => c.PrivateChatPage)},
+
       { path: '**', component: NotFoundPageComponent }
     ]
   }

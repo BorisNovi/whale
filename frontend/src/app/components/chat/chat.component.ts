@@ -15,7 +15,8 @@ import { selectUser } from '../../state';
 })
 export class ChatComponent implements AfterViewChecked {
   @Input() messagesS!: Signal<IMessage[]>;
-  @Output() messageSent = new EventEmitter<IMessage>()
+  @Output() messageSent = new EventEmitter<IMessage>();
+  @Output() userClicked = new EventEmitter<string>()
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
@@ -26,10 +27,19 @@ export class ChatComponent implements AfterViewChecked {
 
   public sendMessage(): void {
     if (this.newMessage.trim()) {
-      this.messageSent.emit({ message: this.newMessage })
+      this.messageSent.emit({ 
+        message: this.newMessage,
+        userId: this.currentUser()?.userId ?? ''
+      })
       this.newMessage = '';
       this.scrollToBottom();
     }
+  }
+
+  public onUsernameClick(userId: string): void {
+    const currentUser = this.currentUser();
+    if (currentUser?.userId === userId) return;
+    this.userClicked.emit(`${this.currentUser()?.userId}:${userId}`);
   }
 
   private scrollToBottom(): void {

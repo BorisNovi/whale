@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { IMessage, SocketService } from '../../shared';
 import { ChatComponent } from '../../components';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'whale-group-chat',
@@ -15,6 +16,7 @@ import { ChatComponent } from '../../components';
 export class GroupChatComponent implements OnInit {
   private socketService = inject(SocketService);
   private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
 
   public messagesS = signal<IMessage[]>([]);
 
@@ -28,7 +30,11 @@ export class GroupChatComponent implements OnInit {
       .subscribe(msg => this.messagesS.update(messages => [msg, ...messages]));
   }
 
-  public sendMessage(message: IMessage) {
+  public sendMessage(message: IMessage): void {
     this.socketService.sendMessage('message', message);
+  }
+
+  public redirectToPrivateChat(pivateChatId: string): void {
+    this.router.navigate([`chat/${pivateChatId}`]);
   }
 }

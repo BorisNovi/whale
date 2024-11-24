@@ -1,10 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { IToken } from './interfaces';
+import { IToken, IUser } from './interfaces';
 
 @Injectable()
 export class AuthService {
-  private onlineUsers = new Map<string, { username: string; color: string }>();
+  private onlineUsers = new Map<
+    string,
+    { username: string; userId: string; color: string }
+  >();
   private readonly secretKey = process.env.JWT_SECRET_KEY;
 
   isUsernameOnline(username: string): boolean {
@@ -13,11 +16,13 @@ export class AuthService {
     );
   }
 
-  login(username: string): { username: string; token: IToken; color: string } {
+  login(username: string): IUser {
+    const userId = this.generateUniqueUserId();
     const token = this.generateToken(username);
     const color = this.generateRandomColor();
-    this.onlineUsers.set(token.accessToken, { username, color });
-    return { username, token, color };
+    this.onlineUsers.set(token.accessToken, { username, userId, color });
+
+    return { username, userId, token, color };
   }
 
   logout(accessToken: string): { success: boolean; message: string } {
@@ -46,14 +51,13 @@ export class AuthService {
     }
   }
 
-  getUsername(accessToken: string): string | null {
+  getUserData(accessToken: string, key?: string): Partial<IUser> | null {
     const userInfo = this.onlineUsers.get(accessToken);
-    return userInfo ? userInfo.username : null;
-  }
-
-  getUserColor(accessToken: string): string | null {
-    const userInfo = this.onlineUsers.get(accessToken);
-    return userInfo ? userInfo.color : null;
+    if (!!key) {
+      return userInfo ? userInfo[key] : null;
+    } else {
+      return userInfo;
+    }
   }
 
   private generateToken(username: string): IToken {
@@ -99,5 +103,26 @@ export class AuthService {
   private generateRandomColor(): string {
     const randomColor = Math.floor(Math.random() * 16777215).toString(16);
     return `#${randomColor.padStart(6, '0')}`; // #RRGGBB
+  }
+
+  private generateUniqueUserId(): string {
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    let userId: string;
+    do {
+      userId = '';
+      for (let i = 0; i < 12; i++) {
+        userId += characters.charAt(
+          Math.floor(Math.random() * characters.length),
+        );
+      }
+    } while (
+      Array.from(this.onlineUsers.values()).some(
+        (user) => user.userId === userId,
+      )
+    );
+
+    return userId;
   }
 }
