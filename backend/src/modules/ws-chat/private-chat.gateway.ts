@@ -21,6 +21,7 @@ import { WsChatExceptionFilter } from './filters';
 import { AuthService } from '../auth/auth.service';
 import { IMessage } from './interfaces';
 import { WsAuthGuard } from 'src/common';
+import { NotificationService } from './notification.service';
 
 @WebSocketGateway({
   namespace: '/chat',
@@ -43,6 +44,7 @@ export class PrivateChatGateway
   constructor(
     private readonly wsChatService: WsChatService,
     private readonly authService: AuthService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   afterInit() {
@@ -81,14 +83,26 @@ export class PrivateChatGateway
 
     const token = this.extractToken(client);
     const senderData = this.authService.getUserData(token);
+    const [creatorId, targetUserId] = messageDto.chatId.split(':');
+
+    if (
+      senderData.userId !== creatorId && // Отправитель должен быть creatorId
+      senderData.userId !== targetUserId // или targetUserId
+    ) {
+      throw new Error(
+        `${senderData.userId} not authorized to send messages in this chat`,
+      );
+    }
 
     const message: IMessage = {
-      ...messageDto,
       username: senderData.username,
       userId: senderData.userId,
       color: senderData.color,
       timestamp: new Date().toISOString(),
+      text: messageDto.message.text, // Используем вложенное поле
     };
+
+    // TODO: сделать хранение сообщений через сервис сообщений, а сам сервис сделать универсальный
 
     // Получение текущих сообщений для чата или создание нового массива
     // const existingMessages = this.privateChats.get(messageDto.chatId) || [];
@@ -100,6 +114,17 @@ export class PrivateChatGateway
     // this.privateChats.set(messageDto.chatId, existingMessages.concat(message));
 
     this.server.to(messageDto.chatId).emit('privateMessage', message);
+
+    console.log(
+      `Message sent in private chat ${messageDto.chatId} from user \x1b[34m${senderData.userId}\x1b[0m to user \x1b[33m${targetUserId}\x1b[0m`,
+    );
+
+    // Уведомляем целевого пользователя о новом сообщении
+    this.notificationService.notifyUser(
+      messageDto.chatId,
+      targetUserId,
+      senderData.username,
+    );
   }
 
   private extractToken(client: Socket): string {

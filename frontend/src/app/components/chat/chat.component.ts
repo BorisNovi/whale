@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { IMessage } from '../../shared';
 import { Store } from '@ngrx/store';
 import { selectUser } from '../../state';
+import { RippleDirective } from 'app/shared/directives/ripple.directive';
 
 @Component({
   selector: 'whale-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RippleDirective],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -28,7 +29,7 @@ export class ChatComponent implements AfterViewChecked {
   public sendMessage(): void {
     if (this.newMessage.trim()) {
       this.messageSent.emit({ 
-        message: this.newMessage,
+        text: this.newMessage,
         userId: this.currentUser()?.userId ?? ''
       })
       this.newMessage = '';

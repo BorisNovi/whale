@@ -1,17 +1,18 @@
 import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService, IUserAuth } from '../../shared';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { IUserAuth } from '../../shared';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { AuthActions, AuthState, selectAuthState } from '../../state';
 import { select, Store } from '@ngrx/store';
+import { RippleDirective } from 'app/shared/directives';
 
 @Component({
   selector: 'whale-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RippleDirective],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

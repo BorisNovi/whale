@@ -33,7 +33,8 @@ export class PrivateChatPage implements OnInit {
       .subscribe(msg => this.messagesS.update(messages => [msg, ...messages]));
   }
 
-  public sendMessage(message: IMessage) {
+  public sendMessage(message: IMessage): void {
+    console.log('MESSADE IN PRIVATE CHAT:', message);
     this.socketService.sendMessage('privateMessage', message, this.chatId);
   }
 

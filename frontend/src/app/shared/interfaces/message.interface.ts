@@ -1,7 +1,7 @@
 export interface IMessage {
-  message: string;
+  text: string;
   userId: string;
-  color?: string;
-  username?: string;
-  timestamp?: string;
+  color?: string;        // Только на получение
+  username?: string;     // Только на получение
+  timestamp?: string;    // Только на получение
 }

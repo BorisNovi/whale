@@ -21,6 +21,7 @@ import { WsChatExceptionFilter } from './filters';
 import { AuthService } from '../auth/auth.service';
 import { IMessage } from './interfaces';
 import { WsAuthGuard } from 'src/common';
+import { NotificationService } from './notification.service';
 
 @WebSocketGateway({
   namespace: '/chat',
@@ -40,14 +41,27 @@ export class WsChatGateway
   constructor(
     private readonly wsChatService: WsChatService,
     private readonly authService: AuthService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   afterInit() {
-    console.log('WebSocket initialized');
+    this.notificationService.setServer(this.server);
+    console.log(
+      'WebSocket server initialized and passed to NotificationService',
+    );
   }
 
   handleConnection(client: Socket) {
     const token = this.extractToken(client);
+    const userData = this.authService.getUserData(token);
+
+    if (userData?.userId) {
+      this.notificationService.addUserSocket(userData.userId, client.id);
+
+      console.log(
+        `\x1b[32mUser connected: ${userData.userId} (Socket: ${client.id})\x1b[0m`,
+      );
+    }
 
     // Если юзер утратил токен, то отключаем его, иначе он сможет видеть сообщения, но не сможет писать
     // if (!this.authService.validateUser(token)) {
@@ -63,6 +77,8 @@ export class WsChatGateway
   }
 
   handleDisconnect(client: Socket) {
+    this.notificationService.removeUserSocket(client.id);
+
     console.log(`Client ${client.id} disconnected`);
   }
 
@@ -76,12 +92,13 @@ export class WsChatGateway
     const token = this.extractToken(client);
 
     const senderData = this.authService.getUserData(token);
+
     const message: IMessage = {
-      ...messageDto,
       username: senderData.username,
       userId: senderData.userId,
-      timestamp: new Date().toISOString(),
       color: senderData.color,
+      timestamp: new Date().toISOString(),
+      text: messageDto.message.text, // Используем вложенное поле
     };
 
     this.wsChatService.saveMessage(message);

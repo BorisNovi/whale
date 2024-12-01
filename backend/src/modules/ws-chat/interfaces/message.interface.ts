@@ -3,5 +3,5 @@ export interface IMessage {
   username: string;
   userId: string;
   color: string;
-  message: string;
+  text: string;
 }

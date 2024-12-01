@@ -1,15 +1,17 @@
-import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { selectAuthState, AuthActions, AuthState } from '../../state';
 import { Observable } from 'rxjs';
 import { NotificationLineComponent } from '../notification-line/notification-line.component';
+import { RippleDirective } from 'app/shared/directives';
+import { ItemsLineComponent } from '../items-line/items-line.component';
 
 @Component({
   selector: 'whale-shell',
   standalone: true,
-  imports: [RouterOutlet, NotificationLineComponent],
+  imports: [RouterOutlet, NotificationLineComponent, RippleDirective, ItemsLineComponent],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

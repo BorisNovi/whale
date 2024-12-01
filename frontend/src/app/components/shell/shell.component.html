@@ -1,6 +1,8 @@
 <nav class="shell__navigation">
+  <whale-items-line></whale-items-line>
+
   @if (isAuthentificated) {
-    <button class="shell__navigation__button" (click)="logout()" >Logout</button>
+    <button class="shell__navigation__button" (click)="logout()">Logout</button>
   }
 </nav>
 

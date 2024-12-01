@@ -1,11 +1,19 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+class MessageContent {
+  @IsString()
+  @IsNotEmpty()
+  text: string; // Вложенное поле
+}
 
 export class CreateMessageDto {
-  @IsString()
+  @ValidateNested() // Проверяем вложенный объект
+  @Type(() => MessageContent) // Автоматически преобразуем вложенный объект
   @IsNotEmpty()
-  message: string;
+  message: MessageContent; // Объект с полем message
 
   @IsString()
   @IsNotEmpty()
-  chatId?: string;
+  chatId: string;
 }

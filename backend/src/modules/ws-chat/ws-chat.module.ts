@@ -5,6 +5,7 @@ import { WsChatController } from './ws-chat.controller';
 import { AuthModule } from '../auth/auth.module';
 import { AuthGuard, WsAuthGuard } from '../../common';
 import { PrivateChatGateway } from './private-chat.gateway';
+import { NotificationService } from './notification.service';
 
 @Module({
   controllers: [WsChatController],
@@ -12,6 +13,7 @@ import { PrivateChatGateway } from './private-chat.gateway';
     WsChatGateway,
     PrivateChatGateway,
     WsChatService,
+    NotificationService,
     AuthGuard,
     WsAuthGuard,
   ],
