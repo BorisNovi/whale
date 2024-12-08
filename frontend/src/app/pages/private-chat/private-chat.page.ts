@@ -1,6 +1,6 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { map, merge, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ChatComponent } from 'app/components';
 import { IMessage, SocketService } from 'app/shared';
@@ -27,13 +27,14 @@ export class PrivateChatPage implements OnInit {
 
     this.socketService.sendMessage('joinPrivateChat', {},this.chatId);
 
-    this.socketService.getMessages(this.chatId)
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe(msgList => this.messagesS.update(_ => [...msgList.reverse()]));
-
-    this.socketService.onMessage('privateMessage')
+    merge(
+      this.socketService.getMessages(this.chatId).pipe(map(msgList => msgList.reverse())),
+      this.socketService.onMessage('privateMessage').pipe(map(msg => [msg]))
+    )
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(msg => this.messagesS.update(messages => [msg, ...messages]));
+      .subscribe(newMessages => {
+        this.messagesS.update(messages => [...newMessages, ...messages]);
+      });
   }
 
   public sendMessage(message: IMessage): void {
