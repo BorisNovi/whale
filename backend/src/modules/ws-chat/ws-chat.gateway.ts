@@ -8,7 +8,6 @@ import {
   OnGatewayInit,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { WsChatService } from './ws-chat.service';
 import { Server, Socket } from 'socket.io';
 import { CreateMessageDto } from './dto';
 import {
@@ -22,6 +21,7 @@ import { AuthService } from '../auth/auth.service';
 import { IMessage } from './interfaces';
 import { WsAuthGuard } from 'src/common';
 import { NotificationService } from './notification.service';
+import { SaveMessageService } from './save-message.service';
 
 @WebSocketGateway({
   namespace: '/chat',
@@ -39,7 +39,7 @@ export class WsChatGateway
   @WebSocketServer() server: Server;
 
   constructor(
-    private readonly wsChatService: WsChatService,
+    private readonly saveMessageService: SaveMessageService,
     private readonly authService: AuthService,
     private readonly notificationService: NotificationService,
   ) {}
@@ -101,7 +101,7 @@ export class WsChatGateway
       text: messageDto.message.text, // Используем вложенное поле
     };
 
-    this.wsChatService.saveMessage(message);
+    this.saveMessageService.saveMessage('public', message);
 
     this.server.emit('message', message);
   }

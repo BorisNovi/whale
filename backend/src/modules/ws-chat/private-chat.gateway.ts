@@ -8,7 +8,6 @@ import {
   OnGatewayInit,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { WsChatService } from './ws-chat.service';
 import { Server, Socket } from 'socket.io';
 import { CreateMessageDto } from './dto';
 import {
@@ -22,6 +21,7 @@ import { AuthService } from '../auth/auth.service';
 import { IMessage } from './interfaces';
 import { WsAuthGuard } from 'src/common';
 import { NotificationService } from './notification.service';
+import { SaveMessageService } from './save-message.service';
 
 @WebSocketGateway({
   namespace: '/chat',
@@ -39,10 +39,8 @@ export class PrivateChatGateway
   @WebSocketServer()
   private server: Server;
 
-  // private privateChats: Map<string, IMessage[]> = new Map();
-
   constructor(
-    private readonly wsChatService: WsChatService,
+    private readonly saveMessageService: SaveMessageService,
     private readonly authService: AuthService,
     private readonly notificationService: NotificationService,
   ) {}
@@ -102,16 +100,7 @@ export class PrivateChatGateway
       text: messageDto.message.text, // Используем вложенное поле
     };
 
-    // TODO: сделать хранение сообщений через сервис сообщений, а сам сервис сделать универсальный
-
-    // Получение текущих сообщений для чата или создание нового массива
-    // const existingMessages = this.privateChats.get(messageDto.chatId) || [];
-    // if (!Array.isArray(existingMessages)) {
-    //   throw new Error('Expected an array for privateChats');
-    // }
-
-    // // Добавление нового сообщения в массив
-    // this.privateChats.set(messageDto.chatId, existingMessages.concat(message));
+    this.saveMessageService.saveMessage(messageDto.chatId, message);
 
     this.server.to(messageDto.chatId).emit('privateMessage', message);
 

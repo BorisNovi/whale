@@ -1,15 +1,21 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import { WsChatService } from './ws-chat.service';
 import { IMessage } from './interfaces';
 import { AuthGuard } from 'src/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { SaveMessageService } from './save-message.service';
 
 @Controller('chat')
 export class WsChatController {
-  constructor(private readonly wsChatService: WsChatService) {}
+  constructor(private readonly saveMessageService: SaveMessageService) {}
 
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get list of chat messages' })
+  @ApiQuery({
+    name: 'chatId',
+    type: String,
+    required: true,
+    description: 'Id of the chat we ask messages',
+  })
   @ApiQuery({
     name: 'count',
     type: Number,
@@ -17,9 +23,11 @@ export class WsChatController {
     description:
       'Number of recent messages to retrieve (default: all messages)',
   })
-  @Get('list')
+  @Get('messages')
   @UseGuards(AuthGuard)
-  getAll(
+  getMessages(
+    @Query('chatId')
+    chatId: string,
     @Query('count')
     count?: number,
   ): IMessage[] {
@@ -28,6 +36,12 @@ export class WsChatController {
       parsedCount = 0;
     }
 
-    return this.wsChatService.getAllMessages(-parsedCount);
+    console.log(chatId, count);
+
+    console.log(this.saveMessageService.getAllMessages(chatId, -parsedCount));
+
+    return this.saveMessageService.getAllMessages(chatId, -parsedCount);
   }
+
+  // TODO: добавить метод для запроса сообщений из конкретного чата, но проверять по id, имеем ли мы на это право
 }

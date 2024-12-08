@@ -27,6 +27,9 @@ export class PrivateChatPage implements OnInit {
 
     this.socketService.sendMessage('joinPrivateChat', {},this.chatId);
 
+    this.socketService.getMessages(this.chatId)
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe(msgList => this.messagesS.update(_ => [...msgList.reverse()]));
 
     this.socketService.onMessage('privateMessage')
       .pipe(takeUntilDestroyed(this.destroyRef))
