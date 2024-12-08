@@ -1,10 +1,10 @@
-import { Component, DestroyRef, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { INewChatNotification, SocketService } from 'app/shared';
 import { RippleDirective } from 'app/shared/directives';
+import { catchError, EMPTY, tap, scan } from 'rxjs';
 
-// XXX: Компонент временный
 @Component({
   selector: 'whale-items-line',
   standalone: true,
@@ -13,7 +13,7 @@ import { RippleDirective } from 'app/shared/directives';
   styleUrl: './items-line.component.scss'
 })
 export class ItemsLineComponent implements OnInit {
-  public prvateChatData = signal<INewChatNotification[]>([]);
+  public privateChatData = signal<INewChatNotification[]>([]);
 
   private socketService = inject(SocketService);
   private destroyRef = inject(DestroyRef);
@@ -22,15 +22,25 @@ export class ItemsLineComponent implements OnInit {
   public ngOnInit(): void {
     this.socketService.onMessage('newPrivateMessage')
       .pipe(
+        tap(console.log),
+        catchError(err => {
+          console.error('WebSocket error:', err);
+          return EMPTY;
+        }),
+        scan((acc: INewChatNotification[], msg: INewChatNotification) => {
+          if (!acc.some(chat => chat.chatId === msg.chatId)) {
+            return [...acc, msg];
+          }
+          return acc;
+        }, []),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(msg => {
-        const { chatId, username } = msg;
-        this.prvateChatData.update(currentData => [...currentData, { chatId, username }]);
+      .subscribe(uniqueChats => {
+        this.privateChatData.set(uniqueChats);
       });
   }
 
-  public redirectToPrivateChat(pivateChatId: string): void {
-    this.router.navigate([`chat/${pivateChatId}`]);
+  public redirectToPrivateChat(privateChatId: string): void {
+    this.router.navigate([`chat/${privateChatId}`]);
   }
 }

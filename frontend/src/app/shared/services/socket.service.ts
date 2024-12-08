@@ -1,49 +1,59 @@
-import { effect, inject, Injectable } from '@angular/core';
+import { Injectable, effect, inject } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-
 import { Store } from '@ngrx/store';
 import { AuthActions, selectUser } from '../../state';
-import { IMessage, IUserAuth } from '../interfaces';
-import { Observable, tap } from 'rxjs';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { environment } from '@environments/environment';
+import { Observable, Subject } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { NotificationService } from './notification.service';
+import { environment } from '@environments/environment';
+import { IMessage } from '..';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketService {
   private socket: Socket | null = null;
+  private eventSubjects: Record<string, Subject<any>> = {};
+
   private store = inject(Store);
   private http = inject(HttpClient);
   private notificationService = inject(NotificationService);
 
-  constructor() { 
+  constructor() {
+    // Инициализация сокета при изменении пользователя
     effect(() => {
       const user = this.store.selectSignal(selectUser)();
-
-      console.log('in socket service', user)
-      
       if (user) {
         this.initializeSocket(user.token.accessToken);
+      } else {
+        this.disconnect(); // Отключаем сокет при отсутствии пользователя
       }
     });
   }
 
+  /**
+   * Инициализация WebSocket соединения.
+   * @param accessToken Токен для аутентификации
+   */
   public initializeSocket(accessToken: string): void {
+    if (this.socket) {
+      console.warn('Socket already initialized');
+      return;
+    }
+
     const config = {
       url: `${environment.baseUrl}/chat`,
-      options: {
-        query: {
-          Authorization: accessToken
-        }
-      }
+      options: { query: { Authorization: accessToken }}
     };
 
     this.socket = io(config.url, config.options);
-  
+
+    // Обработчики стандартных событий
     this.socket.on('connect', () => {
       this.notificationService.showNotification({ text: 'Socket connected', type: 'success', closeTimeout: 1500 });
+
+      // Повторная регистрация событий после реконнекта
+      Object.keys(this.eventSubjects).forEach((event) => this.registerSocketEvent(event));
     });
 
     this.socket.on('disconnect', () => {
@@ -58,30 +68,71 @@ export class SocketService {
     });
   }
 
-  public sendMessage(event: string, message: Partial<IMessage>, chatId: string): void {
-    this.socket?.emit(event, { message, chatId });
-  }
+  /**
+   * Регистрация события на сокете.
+   * @param event Название события
+   */
+  private registerSocketEvent(event: string): void {
+    if (!this.eventSubjects[event]) {
+      this.eventSubjects[event] = new Subject<any>();
+    }
 
-  public onMessage(event: string): Observable<IMessage | any> {
-    return new Observable((observer) => {
-      this.socket?.on(event, (message: IMessage) => {
-        observer.next(message);
+    if (this.socket) {
+      this.socket.on(event, (message: any) => {
+        console.log(`Event received: ${event}`, message);
+        this.eventSubjects[event].next(message);
       });
-    });
+    }
   }
 
-  public getMessages(count?: number): Observable<IMessage[]> {    
-    let params = new HttpParams({
-      fromObject: {
-        ...(count && { count }),
-      }
-    });
+  /**
+   * Подписка на событие WebSocket.
+   * @param event Название события
+   * @returns Observable для подписки
+   */
+  public onMessage(event: string): Observable<any> {
+    console.log(this.eventSubjects)
+    this.registerSocketEvent(event);
+    return this.eventSubjects[event].asObservable();
+  }
+
+  /**
+   * Отправка сообщения через WebSocket.
+   * @param event Название события
+   * @param message Данные для отправки
+   * @param chatId Идентификатор чата
+   */
+  public sendMessage(event: string, message: Partial<IMessage>, chatId: string): void {
+    if (!this.socket) {
+      console.error('Socket is not initialized');
+      return;
+    }
+
+    this.socket.emit(event, { message, chatId });
+  }
+
+  /**
+   * Получение сообщений через API.
+   * @param count Количество сообщений для получения
+   * @returns Observable с массивом сообщений
+   */
+  public getMessages(count?: number): Observable<IMessage[]> {
+    let params = new HttpParams();
+    if (count) {
+      params = params.set('count', count.toString());
+    }
 
     return this.http.get<IMessage[]>(`${environment.baseUrl}/api/chat/list`, { params });
   }
 
+  /**
+   * Отключение WebSocket соединения.
+   */
   public disconnect(): void {
-    this.socket?.disconnect();
+    if (this.socket) {
+      this.socket.disconnect();
+      this.socket = null;
+      console.log('Socket disconnected');
+    }
   }
-  
 }
