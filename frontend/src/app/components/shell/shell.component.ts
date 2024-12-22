@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, Input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet } from '@angular/router';
 import { Store, select } from '@ngrx/store';
@@ -7,11 +7,22 @@ import { Observable } from 'rxjs';
 import { NotificationLineComponent } from '../notification-line/notification-line.component';
 import { RippleDirective } from 'app/shared/directives';
 import { ItemsLineComponent } from '../items-line/items-line.component';
+import { ESSidebarComponent, ESSidebarDividerComponent, ESSidebarSpacerComponent, ESSidebarToggleComponent, ESSidebarScrollableComponent } from '../sidebar';
 
 @Component({
   selector: 'whale-shell',
   standalone: true,
-  imports: [RouterOutlet, NotificationLineComponent, RippleDirective, ItemsLineComponent],
+  imports: [
+    RouterOutlet,
+    NotificationLineComponent,
+    RippleDirective,
+    ItemsLineComponent,
+    ESSidebarComponent,
+    ESSidebarToggleComponent,
+    ESSidebarDividerComponent,
+    ESSidebarSpacerComponent,
+    ESSidebarScrollableComponent
+  ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -19,6 +30,16 @@ import { ItemsLineComponent } from '../items-line/items-line.component';
 export class ShellComponent {
   public authState$: Observable<AuthState>;
   public isAuthentificated = false;
+  
+
+  // @Input() color: 'default' | 'primary' | 'secondary';
+  // @Input() width: number;
+  // @Input() maxWidth: number;
+  // @Input() minWidth: number;
+  @Input() isOpen: boolean = false;
+  // @Input() behavior: 'click' | 'hover';
+  // @Input() exclusive: boolean;
+  // @Input() disabled: boolean;
 
   constructor(
     private router: Router,
@@ -33,7 +54,7 @@ export class ShellComponent {
       this.isAuthentificated = authData.isAuthenticated;
 
       if (!authData.isAuthenticated) {
-        this.router.navigate(['/']);
+        this.router.navigate(['/sign-in']);
       }
     })
   }

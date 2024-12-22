@@ -4,6 +4,8 @@
   display: block;
   overflow: hidden;
   height: 100%;
+
+  --navbar-height: 4rem;
 }
 
 .shell {
@@ -14,6 +16,7 @@
     background-color: var(--color-background);
     border-bottom: 1px solid var(--color-monoA-A200);
     justify-content: space-between;
+    height: var(--navbar-height);
 
     &__button {
       @include button-style(); 
@@ -28,6 +31,16 @@
       &:active {
         background-color: var(--color-primary-A800);
       }
+    }
+  }
+
+  &__main {
+    display: flex;
+    height: calc(100% - var(--navbar-height));
+    justify-content: space-between;
+
+    &__outlet {
+      flex-grow: 1;
     }
   }
 }

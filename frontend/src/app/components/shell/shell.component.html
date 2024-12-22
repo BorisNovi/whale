@@ -8,4 +8,30 @@
 
 <whale-notification-line></whale-notification-line>
 
-<router-outlet></router-outlet>
+
+<div class="shell__main">
+  <es-sidebar [isOpen]="isOpen">
+    test
+    <es-sidebar-toggle (openEvent)="isOpen = $event"></es-sidebar-toggle>
+    test
+    <es-sidebar-divider></es-sidebar-divider>
+    <es-sidebar-scrollable>
+      scrollable
+      <es-sidebar-divider></es-sidebar-divider>
+      scrollable
+      <es-sidebar-divider></es-sidebar-divider>
+      scrollable
+      <es-sidebar-divider></es-sidebar-divider>
+      scrollable
+      <es-sidebar-divider></es-sidebar-divider>
+      scrollable
+    </es-sidebar-scrollable>
+    <es-sidebar-spacer></es-sidebar-spacer>
+    test
+    <es-sidebar-divider></es-sidebar-divider>
+  </es-sidebar>
+  
+  <div class="shell__main__outlet">
+    <router-outlet></router-outlet>
+  </div>
+</div>
