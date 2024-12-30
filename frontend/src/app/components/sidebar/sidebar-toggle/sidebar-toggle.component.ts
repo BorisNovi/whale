@@ -5,12 +5,14 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEn
 import { ESSidebarCommonAttrService } from '../sidebar-common-attr.service';
 import { CommonModule } from '@angular/common';
 import { ESSidebarDividerComponent } from '../public-api';
+import { IconChevronLineW300Component } from 'app/shared/icon-components';
+import { RippleDirective } from 'app/shared/directives';
 
 @Component({
   selector: 'es-sidebar-toggle',
   templateUrl: './sidebar-toggle.component.html',
   styleUrls: ['./sidebar-toggle.component.scss'],
-  imports: [CommonModule, ESSidebarDividerComponent],
+  imports: [CommonModule, ESSidebarDividerComponent, RippleDirective, IconChevronLineW300Component],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,

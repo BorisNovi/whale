@@ -1,13 +1,16 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, Input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, Input, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { selectAuthState, AuthActions, AuthState } from '../../state';
-import { Observable } from 'rxjs';
+import { catchError, EMPTY, Observable, scan, tap } from 'rxjs';
 import { NotificationLineComponent } from '../notification-line/notification-line.component';
 import { RippleDirective } from 'app/shared/directives';
-import { ItemsLineComponent } from '../items-line/items-line.component';
 import { ESSidebarComponent, ESSidebarDividerComponent, ESSidebarSpacerComponent, ESSidebarToggleComponent, ESSidebarScrollableComponent } from '../sidebar';
+import { ESSidebarMenuComponent } from '../sidebar/sidebar-menu/sidebar-menu.component';
+import { ESSidebarItemComponent } from '../sidebar/sidebar-item/sidebar-item.component';
+import { IconChevronLineW300Component, IconGlobalLineW500Component, IconMailLineW500Component } from 'app/shared/icon-components';
+import { INewChatNotification, SocketService } from 'app/shared';
 
 @Component({
   selector: 'whale-shell',
@@ -16,20 +19,31 @@ import { ESSidebarComponent, ESSidebarDividerComponent, ESSidebarSpacerComponent
     RouterOutlet,
     NotificationLineComponent,
     RippleDirective,
-    ItemsLineComponent,
     ESSidebarComponent,
     ESSidebarToggleComponent,
     ESSidebarDividerComponent,
     ESSidebarSpacerComponent,
-    ESSidebarScrollableComponent
+    ESSidebarScrollableComponent,
+    ESSidebarMenuComponent,
+    ESSidebarItemComponent,
+    IconChevronLineW300Component,
+    IconMailLineW500Component,
+    IconGlobalLineW500Component,
   ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ShellComponent {
+export class ShellComponent implements OnInit {
   public authState$: Observable<AuthState>;
   public isAuthentificated = false;
+
+    public privateChatData = signal<INewChatNotification[]>([]);
+  
+    private socketService = inject(SocketService);
+    private destroyRef = inject(DestroyRef);
+    private router = inject(Router);
+    private store = inject(Store);
   
 
   // @Input() color: 'default' | 'primary' | 'secondary';
@@ -41,11 +55,7 @@ export class ShellComponent {
   // @Input() exclusive: boolean;
   // @Input() disabled: boolean;
 
-  constructor(
-    private router: Router,
-    private store: Store,
-    private destroyRef: DestroyRef
-  ) {
+  constructor() {
     this.authState$ = this.store.pipe(select(selectAuthState));
 
     this.authState$
@@ -59,9 +69,36 @@ export class ShellComponent {
     })
   }
 
+  public ngOnInit(): void {
+    this.socketService.onMessage('newPrivateMessage')
+      .pipe(
+        tap(console.log),
+        catchError(err => {
+          console.error('WebSocket error:', err);
+          return EMPTY;
+        }),
+        scan((acc: INewChatNotification[], msg: INewChatNotification) => {
+          if (!acc.some(chat => chat.chatId === msg.chatId)) {
+            return [...acc, msg];
+          }
+          return acc;
+        }, []),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(uniqueChats => {
+        this.privateChatData.set(uniqueChats);
+      });
+  }
+
+  public redirectToGlobalChat(): void {
+    this.router.navigate(['group-chat']);
+  }
+
+  public redirectToPrivateChat(privateChatId: string): void {
+    this.router.navigate([`chat/${privateChatId}`]);
+  }
 
   public logout(): void {
     this.store.dispatch(AuthActions.logOut())
   }
-
 }

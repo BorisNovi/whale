@@ -1,5 +1,0 @@
-<div class="items-line__wrapper">
-  @for (chatData of privateChatData(); track $index) {
-    <button class="items-line__button" (click)="redirectToPrivateChat(chatData.chatId)">{{ chatData.username }}</button>
-  }
-</div>

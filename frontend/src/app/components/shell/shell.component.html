@@ -1,34 +1,44 @@
-<nav class="shell__navigation">
-  <whale-items-line></whale-items-line>
-
-  @if (isAuthentificated) {
-    <button class="shell__navigation__button" (click)="logout()">Logout</button>
-  }
-</nav>
-
 <whale-notification-line></whale-notification-line>
-
 
 <div class="shell__main">
   <es-sidebar [isOpen]="isOpen">
-    test
+    <es-sidebar-menu>
+      <es-sidebar-item text="Global chat" (itemClick)="redirectToGlobalChat()">
+        <whale-icon-global-line-w500 icon></whale-icon-global-line-w500>
+      </es-sidebar-item>
+    </es-sidebar-menu>
     <es-sidebar-toggle (openEvent)="isOpen = $event"></es-sidebar-toggle>
-    test
-    <es-sidebar-divider></es-sidebar-divider>
+
     <es-sidebar-scrollable>
-      scrollable
-      <es-sidebar-divider></es-sidebar-divider>
-      scrollable
-      <es-sidebar-divider></es-sidebar-divider>
-      scrollable
-      <es-sidebar-divider></es-sidebar-divider>
-      scrollable
-      <es-sidebar-divider></es-sidebar-divider>
-      scrollable
+      <es-sidebar-menu>
+        <es-sidebar-item
+        (itemClick)="null"
+        [disabled]="false"
+        id="0"
+        text="Private chats">
+        <whale-icon-mail-line-w500 icon></whale-icon-mail-line-w500>
+        <ng-template #items>
+          @for (chatData of privateChatData(); track $index) {
+            <es-sidebar-item [text]="chatData.username" (itemClick)="redirectToPrivateChat(chatData.chatId)" inset></es-sidebar-item>
+          }
+        </ng-template>
+      </es-sidebar-item>
+
+      </es-sidebar-menu>
     </es-sidebar-scrollable>
+
     <es-sidebar-spacer></es-sidebar-spacer>
-    test
+
+    <es-sidebar-menu>
+      <es-sidebar-item text="Notifications"> </es-sidebar-item>
+      <es-sidebar-item text="Settings"> </es-sidebar-item>
+    </es-sidebar-menu>
     <es-sidebar-divider></es-sidebar-divider>
+    <es-sidebar-menu>
+      <es-sidebar-item text="Log out" (itemClick)="logout()">
+        <whale-icon-chevron-line-w300 icon></whale-icon-chevron-line-w300>
+      </es-sidebar-item>
+    </es-sidebar-menu>
   </es-sidebar>
   
   <div class="shell__main__outlet">
