@@ -1,10 +1,10 @@
-import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, Renderer2, AfterViewInit } from '@angular/core';
 
 @Directive({
   selector: 'button, [whaleRipple]',
   standalone: true
 })
-export class RippleDirective {
+export class RippleDirective implements AfterViewInit {
   @Input('whaleRippleColor') color: string = 'rgba(0, 0, 0, 0.2)';
 
   private _disabled = false;
@@ -18,10 +18,11 @@ export class RippleDirective {
     return this._disabled;
   }
 
-  private _isOpen = false;
   private animationDuration = 800; // ms
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {
+  constructor(private el: ElementRef, private renderer: Renderer2) {}
+
+  ngAfterViewInit(): void {
     const style = window.getComputedStyle(this.el.nativeElement);
     if (style.position === 'static' || !style.position) {
       this.renderer.setStyle(this.el.nativeElement, 'position', 'relative');
