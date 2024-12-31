@@ -22,12 +22,13 @@ import { resizeObserver } from 'app/shared';
 import { CommonModule } from '@angular/common';
 import { RippleDirective } from 'app/shared/directives';
 import { IconChevronLineW300Component } from 'app/shared/icon-components';
+import { TooltipDirective } from 'app/components/tooltip/tooltip.directive';
 
 @Component({
   selector: 'es-sidebar-item',
   templateUrl: './sidebar-item.component.html',
   styleUrls: ['./sidebar-item.component.scss'],
-  imports: [CommonModule, RippleDirective, IconChevronLineW300Component],
+  imports: [CommonModule, RippleDirective, IconChevronLineW300Component, TooltipDirective],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -49,7 +50,7 @@ export class ESSidebarItemComponent implements AfterViewInit, OnChanges {
     return this._selected;
   }
   set selected(value: boolean | string | null) {
-    this._selected = value === 'true' || value === true;;
+    this._selected = value === 'true' || value === true;
   }
   private _selected = false;
 

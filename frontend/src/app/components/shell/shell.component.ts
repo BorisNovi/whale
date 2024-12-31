@@ -5,11 +5,10 @@ import { Store, select } from '@ngrx/store';
 import { selectAuthState, AuthActions, AuthState } from '../../state';
 import { catchError, EMPTY, Observable, scan, tap } from 'rxjs';
 import { NotificationLineComponent } from '../notification-line/notification-line.component';
-import { RippleDirective } from 'app/shared/directives';
 import { ESSidebarComponent, ESSidebarDividerComponent, ESSidebarSpacerComponent, ESSidebarToggleComponent, ESSidebarScrollableComponent } from '../sidebar';
 import { ESSidebarMenuComponent } from '../sidebar/sidebar-menu/sidebar-menu.component';
 import { ESSidebarItemComponent } from '../sidebar/sidebar-item/sidebar-item.component';
-import { IconChevronLineW300Component, IconGlobalLineW500Component, IconMailLineW500Component } from 'app/shared/icon-components';
+import { IconChevronLineW300Component, IconCogLineW500Component, IconGlobalLineW500Component, IconMailLineW500Component } from 'app/shared/icon-components';
 import { INewChatNotification, SocketService } from 'app/shared';
 
 @Component({
@@ -18,7 +17,6 @@ import { INewChatNotification, SocketService } from 'app/shared';
   imports: [
     RouterOutlet,
     NotificationLineComponent,
-    RippleDirective,
     ESSidebarComponent,
     ESSidebarToggleComponent,
     ESSidebarDividerComponent,
@@ -29,6 +27,7 @@ import { INewChatNotification, SocketService } from 'app/shared';
     IconChevronLineW300Component,
     IconMailLineW500Component,
     IconGlobalLineW500Component,
+    IconCogLineW500Component
   ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',

@@ -2,13 +2,11 @@
   <div class="es-sidebar-item__wrapper">
     <button
       #itemButton
-      esTooltip
-
-      esTooltipClass="es-sidebar-item__tooltip"
-
-      esTooltipPosition="after"
-
-
+      [whaleTooltip]="tooltipTemplate"
+      tooltipClass="es-sidebar-item__tooltip"
+      tooltipPosition="right"
+      [tooltipInteractive]="hasChildren$ | async"
+      [tooltipDisabled]="(isOpen$ | async) || disabled"
       [tabIndex]="disabled ? -1 : 0"
       (mouseenter)="selectedTooltipItemIndex = 0"
       (focus)="selectedTooltipItemIndex = 0"
@@ -65,12 +63,12 @@
   <div (keydown)="_onTooltipKeydown($event)" class="es-sidebar-item__tooltip__wrapper">
     <div #tooltipHeader class="es-sidebar-item__tooltip__header">
       <button
-        class="es-sidebar-item__tooltip__header__button es-body-100"
+        class="es-sidebar-item__tooltip__header__button"
         *ngIf="isExpandClickable"
         (click)="_onItemClick($event)">
         {{ text }}
       </button>
-      <div class="es-sidebar-item__tooltip__header__text es-body-100" *ngIf="!isExpandClickable">{{ text }}</div>
+      <div class="es-sidebar-item__tooltip__header__text" *ngIf="!isExpandClickable">{{ text }}</div>
     </div>
 
     <div class="es-sidebar-item__tooltip__children" [ngStyle]="{ display: (hasChildren$ | async) ? 'block' : 'none' }">

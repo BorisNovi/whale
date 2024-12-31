@@ -17,11 +17,13 @@
         id="0"
         text="Private chats">
         <whale-icon-mail-line-w500 icon></whale-icon-mail-line-w500>
-        <ng-template #items>
-          @for (chatData of privateChatData(); track $index) {
-            <es-sidebar-item [text]="chatData.username" (itemClick)="redirectToPrivateChat(chatData.chatId)" inset></es-sidebar-item>
-          }
-        </ng-template>
+        @if (privateChatData().length) {
+          <ng-template #items>
+            @for (chatData of privateChatData(); track $index) {
+              <es-sidebar-item [text]="chatData.username" (itemClick)="redirectToPrivateChat(chatData.chatId)" inset></es-sidebar-item>
+            }
+          </ng-template>
+        }
       </es-sidebar-item>
 
       </es-sidebar-menu>
@@ -30,8 +32,10 @@
     <es-sidebar-spacer></es-sidebar-spacer>
 
     <es-sidebar-menu>
-      <es-sidebar-item text="Notifications"> </es-sidebar-item>
-      <es-sidebar-item text="Settings"> </es-sidebar-item>
+      <!-- <es-sidebar-item text="Notifications"> </es-sidebar-item> -->
+      <es-sidebar-item text="Settings">
+        <whale-icon-cog-line-w500 icon></whale-icon-cog-line-w500>
+      </es-sidebar-item>
     </es-sidebar-menu>
     <es-sidebar-divider></es-sidebar-divider>
     <es-sidebar-menu>

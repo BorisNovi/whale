@@ -136,8 +136,6 @@
     padding: 0 !important;
     margin-left: 10px !important;
 
-    background-color: var(--color-background);
-    color: var(--color-monoA-A900);
     box-shadow:
       0 8px 16px 0 rgba(0, 0, 0, 0.07),
       0 3px 6px 0 rgba(0, 0, 0, 0.03),
@@ -154,7 +152,7 @@
         cursor: pointer;
 
         background-color: transparent;
-        color: var(--color-monoA-A900);
+        color: var(--color-mono-A900);
 
         &:focus-visible {
           outline: none;
@@ -185,11 +183,11 @@
           }
 
           &__button {
-            padding: 4px 16px;
+            padding: 4px 16px !important;
             border-radius: 0;
             min-height: 32px;
 
-            color: var(--color-monoA-A800);
+            color: var(--color-monoB-A900);
 
             &:active {
               background-color: var(--color-monoA-A200);
@@ -211,6 +209,10 @@
 
             &__container {
               padding: 0;
+
+              &__icon {
+                display: none;
+              }
 
               &__text {
                 padding: 0 !important;
