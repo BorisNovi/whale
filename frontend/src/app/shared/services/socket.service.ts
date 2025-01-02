@@ -6,7 +6,7 @@ import { Observable, Subject } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { NotificationService } from './notification.service';
 import { environment } from '@environments/environment';
-import { IMessage } from '..';
+import { IChatNotification, IMessage } from '..';
 
 @Injectable({
   providedIn: 'root'
@@ -125,6 +125,13 @@ export class SocketService {
     }
 
     return this.http.get<IMessage[]>(`${environment.baseUrl}/api/chat/messages`, { params });
+  }
+
+  public getChats(userId: string): Observable<IChatNotification[]> {
+    let params = new HttpParams();
+    params = params.set('userId', userId);
+
+    return this.http.get<IChatNotification[]>(`${environment.baseUrl}/api/chat/chats`, { params });
   }
 
   /**

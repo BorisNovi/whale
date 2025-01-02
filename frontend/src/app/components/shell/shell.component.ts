@@ -9,7 +9,7 @@ import { ESSidebarComponent, ESSidebarDividerComponent, ESSidebarSpacerComponent
 import { ESSidebarMenuComponent } from '../sidebar/sidebar-menu/sidebar-menu.component';
 import { ESSidebarItemComponent } from '../sidebar/sidebar-item/sidebar-item.component';
 import { IconChevronLineW300Component, IconCogLineW500Component, IconGlobalLineW500Component, IconMailLineW500Component } from 'app/shared/icon-components';
-import { INewChatNotification, SocketService } from 'app/shared';
+import { IChatNotification, IUserAuth, SocketService } from 'app/shared';
 
 @Component({
   selector: 'whale-shell',
@@ -35,14 +35,15 @@ import { INewChatNotification, SocketService } from 'app/shared';
 })
 export class ShellComponent implements OnInit {
   public authState$: Observable<AuthState>;
+  public user: IUserAuth | null = null;
   public isAuthentificated = false;
 
-    public privateChatData = signal<INewChatNotification[]>([]);
-  
-    private socketService = inject(SocketService);
-    private destroyRef = inject(DestroyRef);
-    private router = inject(Router);
-    private store = inject(Store);
+  public privateChatData = signal<IChatNotification[]>([]);
+
+  private socketService = inject(SocketService);
+  private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
+  private store = inject(Store);
   
 
   // @Input() color: 'default' | 'primary' | 'secondary';
@@ -60,6 +61,7 @@ export class ShellComponent implements OnInit {
     this.authState$
     .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe((authData) => {
+      this.user = authData.user;
       this.isAuthentificated = authData.isAuthenticated;
 
       if (!authData.isAuthenticated) {
@@ -69,6 +71,10 @@ export class ShellComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.socketService.getChats(this.user?.userId || '')
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe((chats) => console.log(chats));
+
     this.socketService.onMessage('newPrivateMessage')
       .pipe(
         tap(console.log),
@@ -76,7 +82,7 @@ export class ShellComponent implements OnInit {
           console.error('WebSocket error:', err);
           return EMPTY;
         }),
-        scan((acc: INewChatNotification[], msg: INewChatNotification) => {
+        scan((acc: IChatNotification[], msg: IChatNotification) => {
           if (!acc.some(chat => chat.chatId === msg.chatId)) {
             return [...acc, msg];
           }

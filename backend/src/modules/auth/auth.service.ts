@@ -60,6 +60,13 @@ export class AuthService {
     }
   }
 
+  getFullUserDataById(userId: string): Partial<IUser> | null {
+    const user = Array.from(this.onlineUsers.values()).find(
+      (userInfo) => userInfo.userId === userId,
+    );
+    return user || null;
+  }
+
   private generateToken(username: string): IToken {
     const accessPayload = { username, type: 'access' };
     const accessToken = jwt.sign(accessPayload, this.secretKey, {

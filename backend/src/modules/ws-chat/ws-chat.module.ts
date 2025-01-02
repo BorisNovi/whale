@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { WsChatGateway } from './ws-chat.gateway';
-import { WsChatController } from './ws-chat.controller';
+import { GroupChatGateway } from './group-chat.gateway';
+import { ChatsController } from './chats.controller';
 import { AuthModule } from '../auth/auth.module';
 import { AuthGuard, WsAuthGuard } from '../../common';
 import { PrivateChatGateway } from './private-chat.gateway';
@@ -8,9 +8,9 @@ import { NotificationService } from './notification.service';
 import { SaveMessageService } from './save-message.service';
 
 @Module({
-  controllers: [WsChatController],
+  controllers: [ChatsController],
   providers: [
-    WsChatGateway,
+    GroupChatGateway,
     PrivateChatGateway,
     SaveMessageService,
     NotificationService,

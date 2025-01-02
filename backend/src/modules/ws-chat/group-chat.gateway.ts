@@ -33,7 +33,7 @@ import { SaveMessageService } from './save-message.service';
   },
 })
 @UseFilters(new WsChatExceptionFilter())
-export class WsChatGateway
+export class GroupChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() server: Server;

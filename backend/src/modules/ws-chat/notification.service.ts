@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
+import { IChatInfo } from './interfaces';
+import { IUser } from '../auth/interfaces';
 
 @Injectable()
 export class NotificationService {
   private userSockets = new Map<string, string>();
+  private userChats = new Map<string, IChatInfo[]>();
   private server: Server;
 
   setServer(server: Server) {
@@ -12,8 +15,6 @@ export class NotificationService {
 
   addUserSocket(userId: string, socketId: string) {
     this.userSockets.set(userId, socketId);
-
-    console.log(this.userSockets);
   }
 
   removeUserSocket(socketId: string) {
@@ -27,11 +28,32 @@ export class NotificationService {
     const socketId = this.userSockets.get(targetUserId);
     if (socketId && this.server) {
       this.server.to(socketId).emit('newPrivateMessage', { chatId, username });
-      console.log(`Notified user ${targetUserId} about new chat: ${chatId}`);
-    } else {
-      console.log(
-        `User ${targetUserId} is not connected or server is undefined`,
-      );
     }
+  }
+
+  saveChat(
+    sender: Partial<IUser>,
+    targetUser: Partial<IUser>,
+    chatId: string,
+  ): void {
+    const addChatForUser = (
+      userId: string,
+      sender: Partial<IUser>,
+      targetUser: Partial<IUser>,
+    ) => {
+      const chats = this.userChats.get(userId) || [];
+      if (!chats.some((chat) => chat.chatId === chatId)) {
+        chats.push({ chatId, sender, target: targetUser });
+        this.userChats.set(userId, chats);
+      }
+    };
+
+    addChatForUser(targetUser.userId, sender, targetUser); // Получатель может видеть чат
+    addChatForUser(sender.userId, sender, targetUser); // Отправитель может видеть чат
+  }
+
+  getChats(userId: string): IChatInfo[] {
+    // TODO: Позволить запрашивать чаты только участникам чатов. Добавить ID юзера к токену.
+    return Array.from(this.userChats.get(userId));
   }
 }

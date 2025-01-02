@@ -5,7 +5,6 @@ import {
   WebSocketServer,
   ConnectedSocket,
   OnGatewayConnection,
-  OnGatewayInit,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -100,7 +99,16 @@ export class PrivateChatGateway
       text: messageDto.message.text, // Используем вложенное поле
     };
 
+    // Сохраняем сообщения
     this.saveMessageService.saveMessage(messageDto.chatId, message);
+
+    // Сохраняем чат для обоих пользователей
+    const targetUserData = this.authService.getFullUserDataById(targetUserId);
+    this.notificationService.saveChat(
+      senderData,
+      targetUserData,
+      messageDto.chatId,
+    );
 
     this.server.to(messageDto.chatId).emit('privateMessage', message);
 

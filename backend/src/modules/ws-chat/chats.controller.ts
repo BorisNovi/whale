@@ -1,12 +1,16 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { IMessage } from './interfaces';
 import { AuthGuard } from 'src/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { SaveMessageService } from './save-message.service';
+import { NotificationService } from './notification.service';
 
 @Controller('chat')
-export class WsChatController {
-  constructor(private readonly saveMessageService: SaveMessageService) {}
+export class ChatsController {
+  constructor(
+    private readonly saveMessageService: SaveMessageService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get list of chat messages' })
@@ -44,4 +48,13 @@ export class WsChatController {
   }
 
   // TODO: добавить метод для запроса сообщений из конкретного чата, но проверять по id, имеем ли мы на это право
+
+  @Get('chats')
+  @UseGuards(AuthGuard)
+  getChats(
+    @Query('userId')
+    userId: string,
+  ) {
+    return this.notificationService.getChats(userId);
+  }
 }
