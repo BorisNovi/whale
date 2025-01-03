@@ -99,6 +99,13 @@ export class PrivateChatGateway
       text: messageDto.message.text, // Используем вложенное поле
     };
 
+    // Отправляем сообщение
+    this.server.to(messageDto.chatId).emit('privateMessage', message);
+
+    console.log(
+      `Message sent in private chat ${messageDto.chatId} from user \x1b[34m${senderData.userId}\x1b[0m to user \x1b[33m${targetUserId}\x1b[0m`,
+    );
+
     // Сохраняем сообщения
     this.saveMessageService.saveMessage(messageDto.chatId, message);
 
@@ -110,17 +117,11 @@ export class PrivateChatGateway
       messageDto.chatId,
     );
 
-    this.server.to(messageDto.chatId).emit('privateMessage', message);
-
-    console.log(
-      `Message sent in private chat ${messageDto.chatId} from user \x1b[34m${senderData.userId}\x1b[0m to user \x1b[33m${targetUserId}\x1b[0m`,
-    );
-
     // Уведомляем целевого пользователя о новом сообщении
     this.notificationService.notifyUser(
+      senderData,
+      targetUserData,
       messageDto.chatId,
-      targetUserId,
-      senderData.username,
     );
   }
 

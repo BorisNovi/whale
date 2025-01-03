@@ -20,7 +20,10 @@
         @if (privateChatData().length) {
           <ng-template #items>
             @for (chatData of privateChatData(); track $index) {
-              <es-sidebar-item [text]="chatData.username" (itemClick)="redirectToPrivateChat(chatData.chatId)" inset></es-sidebar-item>
+              @let oppositeUsername = user?.userId === chatData?.sender?.userId 
+              ? chatData?.target?.username || 'Anon' 
+              : chatData?.sender?.username || 'Anon';
+              <es-sidebar-item [text]="oppositeUsername" (itemClick)="redirectToPrivateChat(chatData.chatId)" inset></es-sidebar-item>
             }
           </ng-template>
         }

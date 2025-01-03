@@ -24,10 +24,17 @@ export class NotificationService {
     if (userId) this.userSockets.delete(userId);
   }
 
-  notifyUser(chatId: string, targetUserId: string, username: string): void {
-    const socketId = this.userSockets.get(targetUserId);
-    if (socketId && this.server) {
-      this.server.to(socketId).emit('newPrivateMessage', { chatId, username });
+  notifyUser(
+    sender: Partial<IUser>,
+    targetUser: Partial<IUser>,
+    chatId: string,
+  ): void {
+    const senderSocketId = this.userSockets.get(sender.userId);
+    const targetSocketId = this.userSockets.get(targetUser.userId);
+    if (targetSocketId && this.server) {
+      this.server
+        .to([senderSocketId, targetSocketId])
+        .emit('newChat', { chatId, sender, target: targetUser });
     }
   }
 
@@ -52,8 +59,8 @@ export class NotificationService {
     addChatForUser(sender.userId, sender, targetUser); // Отправитель может видеть чат
   }
 
-  getChats(userId: string): IChatInfo[] {
+  getChats(userId: string): IChatInfo[] | [] {
     // TODO: Позволить запрашивать чаты только участникам чатов. Добавить ID юзера к токену.
-    return Array.from(this.userChats.get(userId));
+    return Array.from(this.userChats.get(userId) || []);
   }
 }
