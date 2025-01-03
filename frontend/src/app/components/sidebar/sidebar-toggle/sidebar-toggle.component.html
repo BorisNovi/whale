@@ -4,7 +4,10 @@
     (click)="_onClick()"
     [ngClass]="'es-sidebar-toggle__button_' + cas.color"
     [ngStyle]="{ 'margin-left': isOpen ? '7px' : '0' }"
-    class="es-sidebar-toggle__button">
-    <whale-icon-chevron-line-w300 [orientation]="isOpen ? 'left' : 'right'"></whale-icon-chevron-line-w300>
+    class="es-sidebar-toggle__button"
+  >
+    <whale-icon-chevron-line-w300
+      [orientation]="isOpen ? 'left' : 'right'"
+    ></whale-icon-chevron-line-w300>
   </button>
 </div>

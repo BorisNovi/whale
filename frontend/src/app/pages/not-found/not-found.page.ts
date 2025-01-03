@@ -6,8 +6,6 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [RouterModule],
   templateUrl: './not-found.page.html',
-  styleUrl: './not-found.page.scss'
+  styleUrl: './not-found.page.scss',
 })
-export class NotFoundPageComponent {
-
-}
+export class NotFoundPageComponent {}

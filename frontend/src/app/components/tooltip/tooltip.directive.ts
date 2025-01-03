@@ -6,18 +6,18 @@ import {
   ViewContainerRef,
   ComponentRef,
   HostListener,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { TooltipComponent } from './tooltip.component';
 
 @Directive({
   selector: '[whaleTooltip]',
-  standalone: true
+  standalone: true,
 })
 export class TooltipDirective implements OnDestroy {
   @Input('whaleTooltip') tooltipContent!: string | TemplateRef<any>;
   @Input() tooltipPosition: 'top' | 'bottom' | 'left' | 'right' = 'top';
-  @Input() tooltipClass: string = '';
+  @Input() tooltipClass = '';
 
   private tooltipRef: ComponentRef<TooltipComponent> | null = null;
   private closeTimeout: any;
@@ -44,7 +44,10 @@ export class TooltipDirective implements OnDestroy {
     return this._tooltipInteractive;
   }
 
-  constructor(private el: ElementRef, private viewContainerRef: ViewContainerRef) {}
+  constructor(
+    private el: ElementRef,
+    private viewContainerRef: ViewContainerRef,
+  ) {}
 
   @HostListener('mouseenter')
   onMouseEnter() {
@@ -122,7 +125,8 @@ export class TooltipDirective implements OnDestroy {
 
   private isFocusInsideTooltip(): boolean {
     const activeElement = document.activeElement as HTMLElement;
-    const tooltipElement = this.tooltipRef?.location.nativeElement as HTMLElement;
+    const tooltipElement = this.tooltipRef?.location
+      .nativeElement as HTMLElement;
     return (
       this.el.nativeElement.contains(activeElement) ||
       tooltipElement?.contains(activeElement)

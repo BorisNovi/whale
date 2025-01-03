@@ -25,7 +25,8 @@ import { resizeObserver } from 'app/shared';
   encapsulation: ViewEncapsulation.None,
 })
 export class ESSidebarScrollableComponent implements AfterViewInit {
-  @ViewChild('scrollableContainer', { static: true }) scrollableContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('scrollableContainer', { static: true })
+  scrollableContainer!: ElementRef<HTMLDivElement>;
   @HostBinding('class.es-sidebar-scrollable') class = true;
 
   public isScrollable = false;
@@ -34,13 +35,18 @@ export class ESSidebarScrollableComponent implements AfterViewInit {
 
   constructor(
     private cd: ChangeDetectorRef,
-    private destroyRef: DestroyRef
+    private destroyRef: DestroyRef,
   ) {}
 
   public ngAfterViewInit(): void {
     merge(
-      resizeObserver(this.scrollableContainer.nativeElement, { observe: 'width' }),
-      resizeObserver(this.scrollableContainer.nativeElement, { observe: 'height' }))
+      resizeObserver(this.scrollableContainer.nativeElement, {
+        observe: 'width',
+      }),
+      resizeObserver(this.scrollableContainer.nativeElement, {
+        observe: 'height',
+      }),
+    )
       .pipe(debounceTime(25), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.updateScrollableState();
@@ -59,7 +65,10 @@ export class ESSidebarScrollableComponent implements AfterViewInit {
   public onScroll(): void {
     const container = this.scrollableContainer.nativeElement;
     this.isBeforeScroll = container.scrollTop > 0;
-    this.isAfterScroll = !(container.scrollTop >= container.scrollHeight - container.clientHeight);
+    this.isAfterScroll = !(
+      container.scrollTop >=
+      container.scrollHeight - container.clientHeight
+    );
     this.cd.detectChanges();
   }
 }

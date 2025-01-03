@@ -18,7 +18,10 @@ export class AuthService {
   }
 
   public logIn(username: string): Observable<IUserAuth> {
-    return this.httpClient.post<IUserAuth>(`${environment.baseUrl}/api/auth/login`, { username })
+    return this.httpClient.post<IUserAuth>(
+      `${environment.baseUrl}/api/auth/login`,
+      { username },
+    );
   }
 
   public logOut(): Observable<{ success: boolean; message: string }> {
@@ -27,7 +30,10 @@ export class AuthService {
 
     const body = { username: userData?.username };
 
-    return this.httpClient.post<{ success: boolean; message: string }>(`${environment.baseUrl}/api/auth/logout`, body);
+    return this.httpClient.post<{ success: boolean; message: string }>(
+      `${environment.baseUrl}/api/auth/logout`,
+      body,
+    );
   }
 
   public getToken(): IToken | undefined {
@@ -38,6 +44,9 @@ export class AuthService {
     const userData = this.userS();
     const body = { refreshToken: userData?.token.refreshToken };
 
-    return this.httpClient.post<IToken>(`${environment.baseUrl}/api/auth/refreshToken`, body);
+    return this.httpClient.post<IToken>(
+      `${environment.baseUrl}/api/auth/refreshToken`,
+      body,
+    );
   }
 }

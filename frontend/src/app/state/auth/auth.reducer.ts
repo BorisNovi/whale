@@ -16,9 +16,9 @@ export const initialState: AuthState = {
   error: null,
 };
 
-
 // TODO: заменить localstorage на сервис, который проверяет, браузер ли наша платформа.
-export const hydratedAuthState: AuthState = JSON.parse(localStorage.getItem('auth') || 'null') || initialState;
+export const hydratedAuthState: AuthState =
+  JSON.parse(localStorage.getItem('auth') || 'null') || initialState;
 
 export const authReducer = createReducer(
   hydratedAuthState,
@@ -60,21 +60,21 @@ export const authReducer = createReducer(
   on(AuthActions.refreshToken, (state) => ({
     ...state,
     loading: true,
-    error: null
+    error: null,
   })),
   on(AuthActions.refreshTokenSuccess, (state, { token }) => ({
     ...state,
     user: {
       username: state.user!.username,
       userId: state.user!.userId,
-      token
+      token,
     },
     loading: false,
-    error: null
+    error: null,
   })),
   on(AuthActions.refreshTokenFailure, (state, { error }) => ({
     ...state,
     loading: false,
-    error
-  }))
+    error,
+  })),
 );

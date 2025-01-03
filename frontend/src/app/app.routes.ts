@@ -6,14 +6,32 @@ import { authenticatedGuard, loginGuard } from './shared';
 
 export const routes: Routes = [
   {
-    path: 'sign-in', canActivate: [loginGuard], component: LoginPageComponent
+    path: 'sign-in',
+    canActivate: [loginGuard],
+    component: LoginPageComponent,
   },
   {
-    path: '', component: ShellComponent, children: [
+    path: '',
+    component: ShellComponent,
+    children: [
       { path: '', redirectTo: 'group-chat', pathMatch: 'full' },
-      { path: 'group-chat', canActivate: [authenticatedGuard], loadComponent: () => import('./pages/group-chat/group-chat.component').then((c) => c.GroupChatComponent)},
-      { path: 'chat/:id', canActivate: [authenticatedGuard], loadComponent: () => import('./pages/private-chat/private-chat.page').then((c) => c.PrivateChatPage)},
-    ]
+      {
+        path: 'group-chat',
+        canActivate: [authenticatedGuard],
+        loadComponent: () =>
+          import('./pages/group-chat/group-chat.component').then(
+            (c) => c.GroupChatComponent,
+          ),
+      },
+      {
+        path: 'chat/:id',
+        canActivate: [authenticatedGuard],
+        loadComponent: () =>
+          import('./pages/private-chat/private-chat.page').then(
+            (c) => c.PrivateChatPage,
+          ),
+      },
+    ],
   },
-  { path: '**', component: NotFoundPageComponent }
+  { path: '**', component: NotFoundPageComponent },
 ];

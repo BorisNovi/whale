@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { map, merge, Observable } from 'rxjs';
 import { IMessage, SocketService } from '../../shared';
@@ -11,7 +18,7 @@ import { Router } from '@angular/router';
   imports: [ChatComponent],
   templateUrl: './group-chat.component.html',
   styleUrl: './group-chat.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupChatComponent implements OnInit {
   private socketService = inject(SocketService);
@@ -22,12 +29,14 @@ export class GroupChatComponent implements OnInit {
 
   public ngOnInit(): void {
     merge(
-      this.socketService.getMessages('public').pipe(map(msgList => msgList.reverse())),
-      this.socketService.onMessage('message').pipe(map(msg => [msg]))
+      this.socketService
+        .getMessages('public')
+        .pipe(map((msgList) => msgList.reverse())),
+      this.socketService.onMessage('message').pipe(map((msg) => [msg])),
     )
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(newMessages => {
-        this.messagesS.update(messages => [...newMessages, ...messages]);
+      .subscribe((newMessages) => {
+        this.messagesS.update((messages) => [...newMessages, ...messages]);
       });
   }
 

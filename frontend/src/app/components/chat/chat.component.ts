@@ -1,5 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewChecked, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, inject, Input, Output, Signal, ViewChild } from '@angular/core';
+import {
+  AfterViewChecked,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  Signal,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IMessage } from '../../shared';
 import { Store } from '@ngrx/store';
@@ -12,26 +23,26 @@ import { RippleDirective } from 'app/shared/directives/ripple.directive';
   imports: [CommonModule, FormsModule, RippleDirective],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatComponent implements AfterViewChecked {
   @Input() messagesS!: Signal<IMessage[]>;
   @Output() messageSent = new EventEmitter<IMessage>();
-  @Output() userClicked = new EventEmitter<string>()
+  @Output() userClicked = new EventEmitter<string>();
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
-  public newMessage: string = '';
+  public newMessage = '';
 
   private store = inject(Store);
   public currentUser = this.store.selectSignal(selectUser);
 
   public sendMessage(): void {
     if (this.newMessage.trim()) {
-      this.messageSent.emit({ 
+      this.messageSent.emit({
         text: this.newMessage,
-        userId: this.currentUser()?.userId ?? ''
-      })
+        userId: this.currentUser()?.userId ?? '',
+      });
       this.newMessage = '';
       this.scrollToBottom();
     }
@@ -44,7 +55,8 @@ export class ChatComponent implements AfterViewChecked {
   }
 
   private scrollToBottom(): void {
-    this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+    this.messagesContainer.nativeElement.scrollTop =
+      this.messagesContainer.nativeElement.scrollHeight;
   }
 
   public ngAfterViewChecked(): void {

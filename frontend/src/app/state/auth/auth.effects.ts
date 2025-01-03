@@ -10,10 +10,13 @@ export class AuthEffects {
 
   private actions$ = inject(Actions);
 
-  logActions$ = createEffect(() =>
-    this.actions$.pipe(
-      tap(action => console.log('console actions: ', action))
-  ), { dispatch: false });
+  logActions$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        tap((action) => console.log('console actions: ', action)),
+      ),
+    { dispatch: false },
+  );
 
   logIn$ = createEffect(() =>
     this.actions$.pipe(
@@ -21,10 +24,12 @@ export class AuthEffects {
       mergeMap(({ username }) =>
         this.authService.logIn(username).pipe(
           map((user) => AuthActions.logInSuccess({ user })),
-          catchError((error) => of(AuthActions.logInFailure({ error: error.message })))
-        )
-      )
-    )
+          catchError((error) =>
+            of(AuthActions.logInFailure({ error: error.message })),
+          ),
+        ),
+      ),
+    ),
   );
 
   logOut$ = createEffect(() =>
@@ -33,30 +38,35 @@ export class AuthEffects {
       mergeMap(() =>
         this.authService.logOut().pipe(
           map((response) => {
-            if (response.success) { // Found user or not
+            if (response.success) {
+              // Found user or not
               return AuthActions.logOutSuccess({ message: response.message });
             } else {
               console.log(response.message);
               return AuthActions.logOutSuccess({ message: response.message });
             }
           }),
-          catchError((error) => of(AuthActions.logOutFailure({ error: error.message })))
-        )
-      )
-    )
+          catchError((error) =>
+            of(AuthActions.logOutFailure({ error: error.message })),
+          ),
+        ),
+      ),
+    ),
   );
 
-  refreshToken$ = createEffect(() => 
+  refreshToken$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.refreshToken),
-      mergeMap(() => 
+      mergeMap(() =>
         this.authService.refreshToken().pipe(
           map((response) => {
-            return AuthActions.refreshTokenSuccess({ token: response })
+            return AuthActions.refreshTokenSuccess({ token: response });
           }),
-          catchError((error) => of(AuthActions.refreshTokenFailure({ error: error.message })))
-        )
-      )
-    )
-  )
+          catchError((error) =>
+            of(AuthActions.refreshTokenFailure({ error: error.message })),
+          ),
+        ),
+      ),
+    ),
+  );
 }

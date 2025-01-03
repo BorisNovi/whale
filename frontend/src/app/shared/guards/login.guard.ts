@@ -18,5 +18,6 @@ export const loginGuard: CanActivateFn = (route, state) => {
         router.navigate(['/group-chat']);
         return false;
       }
-    }))
+    }),
+  );
 };

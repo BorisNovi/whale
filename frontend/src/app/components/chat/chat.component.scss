@@ -1,4 +1,4 @@
-@import '../../../assets/mixins.scss';
+@import "../../../assets/mixins.scss";
 
 .chat {
   &__container {
@@ -14,10 +14,10 @@
     display: flex;
     flex-direction: column-reverse;
     overflow-y: auto;
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
     background-color: var(--color-background);
   }
-  
+
   &__message {
     background-color: var(--color-success-A500);
     border-radius: 5px;
@@ -36,7 +36,7 @@
       width: 10px;
       border-radius: 40px;
       margin-right: 5px;
-      border: 1px solid var(--color-monoA-A400)
+      border: 1px solid var(--color-monoA-A400);
     }
 
     &__username {
@@ -49,7 +49,7 @@
       @include text-body100();
     }
   }
-  
+
   &__input-container {
     position: sticky;
     bottom: 0;
@@ -59,7 +59,7 @@
     background-color: var(--color-background);
     border-top: 1px solid var(--color-monoA-A200);
   }
-  
+
   &__input {
     @include text-body100();
     flex-grow: 1;
@@ -69,9 +69,9 @@
     margin-right: 10px;
     resize: vertical;
   }
-  
+
   &__button {
-    @include button-style(); 
+    @include button-style();
     @include text-body100();
     color: var(--color-monoB-A900);
     background-color: var(--color-primary-A700);

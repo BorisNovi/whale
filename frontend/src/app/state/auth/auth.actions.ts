@@ -1,4 +1,9 @@
-import { createAction, createActionGroup, emptyProps, props } from '@ngrx/store';
+import {
+  createAction,
+  createActionGroup,
+  emptyProps,
+  props,
+} from '@ngrx/store';
 import { IToken, IUserAuth } from '../../shared';
 
 export const AuthActions = createActionGroup({
@@ -12,6 +17,6 @@ export const AuthActions = createActionGroup({
     'Log Out Failure': props<{ error: string }>(),
     'Refresh Token': emptyProps(),
     'Refresh Token Success': props<{ token: IToken }>(),
-    'Refresh Token Failure': props<{ error: string }>()
-  }
+    'Refresh Token Failure': props<{ error: string }>(),
+  },
 });

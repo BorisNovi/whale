@@ -1,5 +1,10 @@
 import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { IUserAuth } from '../../shared';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
@@ -15,31 +20,34 @@ import { RippleDirective } from 'app/shared/directives';
   imports: [ReactiveFormsModule, RippleDirective],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPageComponent {
-
   public userAuthData: IUserAuth | null = null;
   public authState$: Observable<AuthState>;
 
   public loginForm = new FormGroup({
-    username: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(10)])
+    username: new FormControl('', [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(10),
+    ]),
   });
 
   constructor(
     private router: Router,
     private store: Store,
-    private destroyRef: DestroyRef
+    private destroyRef: DestroyRef,
   ) {
     this.authState$ = this.store.pipe(select(selectAuthState));
 
     this.authState$
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe((authData) => {
-      if (authData.isAuthenticated && authData.user) {
-        this.redirectLoginedUser();
-      }
-    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((authData) => {
+        if (authData.isAuthenticated && authData.user) {
+          this.redirectLoginedUser();
+        }
+      });
   }
 
   public onSubmit(): void {

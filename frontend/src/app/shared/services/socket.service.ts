@@ -9,7 +9,7 @@ import { environment } from '@environments/environment';
 import { IChatNotification, IMessage } from '..';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SocketService {
   private socket: Socket | null = null;
@@ -43,25 +43,39 @@ export class SocketService {
 
     const config = {
       url: `${environment.baseUrl}/chat`,
-      options: { query: { Authorization: accessToken }}
+      options: { query: { Authorization: accessToken } },
     };
 
     this.socket = io(config.url, config.options);
 
     // Standard event handlers
     this.socket.on('connect', () => {
-      this.notificationService.showNotification({ text: 'Socket connected', type: 'success', closeTimeout: 1500 });
+      this.notificationService.showNotification({
+        text: 'Socket connected',
+        type: 'success',
+        closeTimeout: 1500,
+      });
 
       // Re-register events after reconnect
-      Object.keys(this.eventSubjects).forEach((event) => this.registerSocketEvent(event));
+      Object.keys(this.eventSubjects).forEach((event) =>
+        this.registerSocketEvent(event),
+      );
     });
 
     this.socket.on('disconnect', () => {
-      this.notificationService.showNotification({ text: 'Socket disconnected', type: 'info', closeTimeout: 1500 });
+      this.notificationService.showNotification({
+        text: 'Socket disconnected',
+        type: 'info',
+        closeTimeout: 1500,
+      });
     });
 
     this.socket.on('error', (error) => {
-      this.notificationService.showNotification({ text: error.message, type: 'error', closeTimeout: 1500 });
+      this.notificationService.showNotification({
+        text: error.message,
+        type: 'error',
+        closeTimeout: 1500,
+      });
       if (error.error.code === 401) {
         this.store.dispatch(AuthActions.refreshToken());
       }
@@ -76,7 +90,7 @@ export class SocketService {
     if (!this.eventSubjects[event]) {
       this.eventSubjects[event] = new Subject<any>();
     }
-  
+
     if (this.socket && this.socket.listeners(event).length === 0) {
       this.socket.on(event, (message: any) => {
         console.log(`Event received: ${event}`, message);
@@ -101,7 +115,11 @@ export class SocketService {
    * @param message Data to send
    * @param chatId Chat identifier
    */
-  public sendMessage(event: string, message: Partial<IMessage>, chatId: string): void {
+  public sendMessage(
+    event: string,
+    message: Partial<IMessage>,
+    chatId: string,
+  ): void {
     if (!this.socket) {
       console.error('Socket is not initialized');
       return;
@@ -124,7 +142,10 @@ export class SocketService {
       params = params.set('count', count.toString());
     }
 
-    return this.http.get<IMessage[]>(`${environment.baseUrl}/api/chat/messages`, { params });
+    return this.http.get<IMessage[]>(
+      `${environment.baseUrl}/api/chat/messages`,
+      { params },
+    );
   }
 
   /**
@@ -136,7 +157,10 @@ export class SocketService {
     let params = new HttpParams();
     params = params.set('userId', userId);
 
-    return this.http.get<IChatNotification[]>(`${environment.baseUrl}/api/chat/chats`, { params });
+    return this.http.get<IChatNotification[]>(
+      `${environment.baseUrl}/api/chat/chats`,
+      { params },
+    );
   }
 
   /**
@@ -145,7 +169,7 @@ export class SocketService {
   private clearSubscriptions(): void {
     Object.keys(this.eventSubjects).forEach((event) => {
       console.log(`Clearing subscription for event: ${event}`);
-      
+
       if (this.socket) {
         this.socket.off(event);
       }

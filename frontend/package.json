@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "lint-fix": "ng lint --fix",
     "prettier-check": "npx prettier . --check",
-    "pretiier-write": "npx prettier . --write"
+    "prettier-write": "npx prettier . --write"
   },
   "private": true,
   "dependencies": {

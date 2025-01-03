@@ -8,7 +8,7 @@ import { provideEffects } from '@ngrx/effects';
 import { metaReducers, reducers } from './state';
 import { AuthEffects } from './state/auth/auth.effects';
 import { authInterceptor } from './shared/interceptors/auth.interceptor';
-import { provideAnimations } from '@angular/platform-browser/animations'
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,6 +17,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor])),
     provideStore(reducers, { metaReducers }),
     provideEffects(AuthEffects),
-    provideAnimations()
-  ]
+    provideAnimations(),
+  ],
 };

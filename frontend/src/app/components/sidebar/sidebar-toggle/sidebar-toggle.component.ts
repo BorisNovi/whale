@@ -1,6 +1,11 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
-
-
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import { ESSidebarCommonAttrService } from '../sidebar-common-attr.service';
 import { CommonModule } from '@angular/common';
@@ -12,7 +17,12 @@ import { RippleDirective } from 'app/shared/directives';
   selector: 'es-sidebar-toggle',
   templateUrl: './sidebar-toggle.component.html',
   styleUrls: ['./sidebar-toggle.component.scss'],
-  imports: [CommonModule, ESSidebarDividerComponent, RippleDirective, IconChevronLineW300Component],
+  imports: [
+    CommonModule,
+    ESSidebarDividerComponent,
+    RippleDirective,
+    IconChevronLineW300Component,
+  ],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
@@ -31,12 +41,7 @@ export class ESSidebarToggleComponent {
 
   @Output() openEvent = new EventEmitter<boolean>(false);
 
-  constructor(
-    public cas: ESSidebarCommonAttrService,
-
-  ) {
-
-  }
+  constructor(public cas: ESSidebarCommonAttrService) {}
 
   public _onClick(): void {
     this.isOpen = !this.isOpen;

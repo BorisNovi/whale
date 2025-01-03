@@ -1,4 +1,4 @@
-@import '../../../assets/mixins.scss';
+@import "../../../assets/mixins.scss";
 
 :host {
   display: block;
@@ -17,15 +17,15 @@
     height: var(--navbar-height);
 
     &__button {
-      @include button-style(); 
+      @include button-style();
       @include text-body100();
       color: var(--color-monoB-A900);
       background-color: var(--color-primary-A700);
-  
+
       &:hover {
         background-color: var(--color-warn-A700);
       }
-  
+
       &:active {
         background-color: var(--color-primary-A800);
       }

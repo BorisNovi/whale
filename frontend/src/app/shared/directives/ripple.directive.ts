@@ -1,26 +1,37 @@
-import { Directive, ElementRef, HostListener, Input, Renderer2, AfterViewInit } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  HostListener,
+  Input,
+  Renderer2,
+  AfterViewInit,
+  OnInit,
+} from '@angular/core';
 
 @Directive({
   selector: 'button, [whaleRipple]',
-  standalone: true
+  standalone: true,
 })
-export class RippleDirective implements AfterViewInit {
-  @Input('whaleRippleColor') color: string = 'rgba(0, 0, 0, 0.2)';
+export class RippleDirective implements AfterViewInit, OnInit {
+  @Input('whaleRippleColor') color = 'rgba(0, 0, 0, 0.2)';
 
   private _disabled = false;
 
-  @Input('whaleRippleDisabled') 
+  @Input()
   set whaleRippleDisabled(value: any) {
     this._disabled = value === '' || value === true || value === 'true';
   }
-  
+
   get whaleRippleDisabled() {
     return this._disabled;
   }
 
   private animationDuration = 800; // ms
 
-  constructor(private el: ElementRef, private renderer: Renderer2) {}
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2,
+  ) {}
 
   ngAfterViewInit(): void {
     const style = window.getComputedStyle(this.el.nativeElement);
@@ -53,7 +64,11 @@ export class RippleDirective implements AfterViewInit {
     this.renderer.setStyle(ripple, 'top', `${offsetY}px`);
     this.renderer.setStyle(ripple, 'background', `${this.color}`);
     this.renderer.setStyle(ripple, 'transform', 'scale(0)');
-    this.renderer.setStyle(ripple, 'animation', `ripple-effect ${this.animationDuration}ms ease-out`);
+    this.renderer.setStyle(
+      ripple,
+      'animation',
+      `ripple-effect ${this.animationDuration}ms ease-out`,
+    );
     this.renderer.setStyle(ripple, 'pointer-events', 'none');
     this.renderer.setStyle(ripple, 'z-index', '1');
 

@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnChanges,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import { ESSidebarMenuService } from './sidebar-menu.service';
 

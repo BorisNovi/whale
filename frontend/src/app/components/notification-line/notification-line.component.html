@@ -1,3 +1,7 @@
-<div class="notification-line__wrapper" [ngClass]="'notification-line__' + type" [@show]="isShown ? 'open' : 'closed'">
-  <span class="notification-line__text">{{ !!text ? text : 'Error'  }}</span>
+<div
+  class="notification-line__wrapper"
+  [ngClass]="'notification-line__' + type"
+  [@show]="isShown ? 'open' : 'closed'"
+>
+  <span class="notification-line__text">{{ !!text ? text : "Error" }}</span>
 </div>

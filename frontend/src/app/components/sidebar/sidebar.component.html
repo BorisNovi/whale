@@ -1,12 +1,18 @@
-<div class="es-sidebar__root" [ngStyle]="{ cursor: isOpen && (isMouseMove$ | async) ? 'col-resize' : 'default' }">
+<div
+  class="es-sidebar__root"
+  [ngStyle]="{
+    cursor: isOpen && (isMouseMove$ | async) ? 'col-resize' : 'default',
+  }"
+>
   <div
     class="es-sidebar__handler"
     (touchstart)="_onTouchStart($event)"
     (mousedown)="_onMouseDown($event)"
     [ngClass]="{
       'es-sidebar__handler_open': isOpen,
-      'es-sidebar__handler_mouse-down': isMouseDown$ | async
-    }">
+      'es-sidebar__handler_mouse-down': isMouseDown$ | async,
+    }"
+  >
     <div class="es-sidebar__handler__line"></div>
   </div>
   <aside
@@ -15,11 +21,12 @@
     [ngStyle]="{
       'max-width': maxWidth + 'px',
       width: isOpen ? width + 'px' : '',
-      'min-width': (isMouseMove$ | async) ? minWidth + 'px' : ''
+      'min-width': (isMouseMove$ | async) ? minWidth + 'px' : '',
     }"
     [ngClass]="{
-      'es-sidebar__content_mouse-move': isMouseMove$ | async
-    }">
+      'es-sidebar__content_mouse-move': isMouseMove$ | async,
+    }"
+  >
     <ng-content></ng-content>
   </aside>
 </div>

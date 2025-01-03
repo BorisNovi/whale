@@ -51,7 +51,7 @@ export class ESSidebarComponent implements OnChanges, OnDestroy {
 
   constructor(
     private renderer: Renderer2,
-    private cas: ESSidebarCommonAttrService
+    private cas: ESSidebarCommonAttrService,
   ) {}
 
   public ngOnChanges(): void {
@@ -74,13 +74,26 @@ export class ESSidebarComponent implements OnChanges, OnDestroy {
     if (isPrimaryButton && this.isOpen) {
       this.screenX = screenX;
       this.isMouseDown$.next(true);
-      this.initialWidth = this.content.nativeElement.getBoundingClientRect().width;
+      this.initialWidth =
+        this.content.nativeElement.getBoundingClientRect().width;
 
       this.removeEventListeners.push(
-        this.renderer.listen('document', 'mousemove', this._onMouseMove.bind(this)),
+        this.renderer.listen(
+          'document',
+          'mousemove',
+          this._onMouseMove.bind(this),
+        ),
         this.renderer.listen('document', 'mouseup', this._onMouseUp.bind(this)),
-        this.renderer.listen('document', 'touchmove', this._onTouchMove.bind(this)),
-        this.renderer.listen('document', 'touchend', this._onTouchEnd.bind(this))
+        this.renderer.listen(
+          'document',
+          'touchmove',
+          this._onTouchMove.bind(this),
+        ),
+        this.renderer.listen(
+          'document',
+          'touchend',
+          this._onTouchEnd.bind(this),
+        ),
       );
     }
   }
@@ -97,7 +110,10 @@ export class ESSidebarComponent implements OnChanges, OnDestroy {
     if (this.screenX !== null && this.initialWidth !== null) {
       const deltaX = currentScreenX - this.screenX;
       const newWidth = this.initialWidth + deltaX;
-      const clampedWidth = Math.min(this.maxWidth, Math.max(newWidth, this.minWidth));
+      const clampedWidth = Math.min(
+        this.maxWidth,
+        Math.max(newWidth, this.minWidth),
+      );
 
       this.width = clampedWidth;
       this.widthChange.emit(clampedWidth);
@@ -116,7 +132,9 @@ export class ESSidebarComponent implements OnChanges, OnDestroy {
 
   private finalizeResize(): void {
     if (this.initialWidth !== null && this.content.nativeElement) {
-      this.widthChangeCommit.emit(Math.ceil(this.content.nativeElement.getBoundingClientRect().width));
+      this.widthChangeCommit.emit(
+        Math.ceil(this.content.nativeElement.getBoundingClientRect().width),
+      );
     }
 
     this.isMouseMove$.next(false);

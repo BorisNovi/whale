@@ -12,23 +12,28 @@
     <es-sidebar-scrollable>
       <es-sidebar-menu>
         <es-sidebar-item
-        (itemClick)="null"
-        [disabled]="false"
-        id="0"
-        text="Private chats">
-        <whale-icon-mail-line-w500 icon></whale-icon-mail-line-w500>
-        @if (privateChatData().length) {
-          <ng-template #items>
-            @for (chatData of privateChatData(); track $index) {
-              @let oppositeUsername = user?.userId === chatData?.sender?.userId 
-              ? chatData?.target?.username || 'Anon' 
-              : chatData?.sender?.username || 'Anon';
-              <es-sidebar-item [text]="oppositeUsername" (itemClick)="redirectToPrivateChat(chatData.chatId)" inset></es-sidebar-item>
-            }
-          </ng-template>
-        }
-      </es-sidebar-item>
-
+          (itemClick)="(null)"
+          [disabled]="false"
+          id="0"
+          text="Private chats"
+        >
+          <whale-icon-mail-line-w500 icon></whale-icon-mail-line-w500>
+          @if (privateChatData().length) {
+            <ng-template #items>
+              @for (chatData of privateChatData(); track $index) {
+                @let oppositeUsername =
+                  user?.userId === chatData?.sender?.userId
+                    ? chatData?.target?.username || "Anon"
+                    : chatData?.sender?.username || "Anon";
+                <es-sidebar-item
+                  [text]="oppositeUsername"
+                  (itemClick)="redirectToPrivateChat(chatData.chatId)"
+                  inset
+                ></es-sidebar-item>
+              }
+            </ng-template>
+          }
+        </es-sidebar-item>
       </es-sidebar-menu>
     </es-sidebar-scrollable>
 
@@ -47,8 +52,9 @@
       </es-sidebar-item>
     </es-sidebar-menu>
   </es-sidebar>
-  
+
   <div class="shell__main__outlet">
     <router-outlet></router-outlet>
   </div>
+  <whale-icon-chevron-line-w300 icon></whale-icon-chevron-line-w300>
 </div>
