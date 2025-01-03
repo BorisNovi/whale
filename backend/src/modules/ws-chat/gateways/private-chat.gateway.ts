@@ -8,19 +8,19 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { CreateMessageDto } from './dto';
+import { CreateMessageDto } from '../dto';
 import {
   UseFilters,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { WsChatExceptionFilter } from './filters';
-import { AuthService } from '../auth/auth.service';
-import { IMessage } from './interfaces';
+import { WsChatExceptionFilter } from '../filters';
+import { AuthService } from '../../auth/auth.service';
+import { IMessage } from '../interfaces';
 import { WsAuthGuard } from 'src/common';
-import { NotificationService } from './notification.service';
-import { SaveMessageService } from './save-message.service';
+import { ChatsService } from '../chats.service';
+import { SaveMessageService } from '../save-message.service';
 
 @WebSocketGateway({
   namespace: '/chat',
@@ -41,7 +41,7 @@ export class PrivateChatGateway
   constructor(
     private readonly saveMessageService: SaveMessageService,
     private readonly authService: AuthService,
-    private readonly notificationService: NotificationService,
+    private readonly chatsService: ChatsService,
   ) {}
 
   afterInit() {
@@ -111,18 +111,10 @@ export class PrivateChatGateway
 
     // Сохраняем чат для обоих пользователей
     const targetUserData = this.authService.getFullUserDataById(targetUserId);
-    this.notificationService.saveChat(
-      senderData,
-      targetUserData,
-      messageDto.chatId,
-    );
+    this.chatsService.saveChat(senderData, targetUserData, messageDto.chatId);
 
     // Уведомляем целевого пользователя о новом сообщении
-    this.notificationService.notifyUser(
-      senderData,
-      targetUserData,
-      messageDto.chatId,
-    );
+    this.chatsService.notifyUser(senderData, targetUserData, messageDto.chatId);
   }
 
   private extractToken(client: Socket): string {

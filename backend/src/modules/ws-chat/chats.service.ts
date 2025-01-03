@@ -4,7 +4,7 @@ import { IChatInfo } from './interfaces';
 import { IUser } from '../auth/interfaces';
 
 @Injectable()
-export class NotificationService {
+export class ChatsService {
   private userSockets = new Map<string, string>();
   private userChats = new Map<string, IChatInfo[]>();
   private server: Server;
@@ -21,7 +21,9 @@ export class NotificationService {
     const userId = [...this.userSockets.entries()].find(
       ([, id]) => id === socketId,
     )?.[0];
-    if (userId) this.userSockets.delete(userId);
+    if (userId) {
+      this.userSockets.delete(userId);
+    }
   }
 
   notifyUser(
@@ -62,5 +64,14 @@ export class NotificationService {
   getChats(userId: string): IChatInfo[] | [] {
     // TODO: Позволить запрашивать чаты только участникам чатов. Добавить ID юзера к токену.
     return Array.from(this.userChats.get(userId) || []);
+  }
+
+  removeChat(chatId: string): void {
+    this.userChats.forEach((chats, userId) => {
+      const updatedChats = chats.filter((chat) => chat.chatId !== chatId);
+      if (updatedChats.length !== chats.length) {
+        this.userChats.set(userId, updatedChats);
+      }
+    });
   }
 }

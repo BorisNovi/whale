@@ -9,19 +9,19 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { CreateMessageDto } from './dto';
+import { CreateMessageDto } from '../dto';
 import {
   UseFilters,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { WsChatExceptionFilter } from './filters';
-import { AuthService } from '../auth/auth.service';
-import { IMessage } from './interfaces';
+import { WsChatExceptionFilter } from '../filters';
+import { AuthService } from '../../auth/auth.service';
+import { IMessage } from '../interfaces';
 import { WsAuthGuard } from 'src/common';
-import { NotificationService } from './notification.service';
-import { SaveMessageService } from './save-message.service';
+import { ChatsService } from '../chats.service';
+import { SaveMessageService } from '../save-message.service';
 
 @WebSocketGateway({
   namespace: '/chat',
@@ -41,11 +41,11 @@ export class GroupChatGateway
   constructor(
     private readonly saveMessageService: SaveMessageService,
     private readonly authService: AuthService,
-    private readonly notificationService: NotificationService,
+    private readonly chatsService: ChatsService,
   ) {}
 
   afterInit() {
-    this.notificationService.setServer(this.server);
+    this.chatsService.setServer(this.server);
     console.log(
       'WebSocket server initialized and passed to NotificationService',
     );
@@ -56,7 +56,7 @@ export class GroupChatGateway
     const userData = this.authService.getUserData(token);
 
     if (userData?.userId) {
-      this.notificationService.addUserSocket(userData.userId, client.id);
+      this.chatsService.addUserSocket(userData.userId, client.id);
 
       console.log(
         `\x1b[32mUser connected: ${userData.userId} (Socket: ${client.id})\x1b[0m`,
@@ -77,7 +77,7 @@ export class GroupChatGateway
   }
 
   handleDisconnect(client: Socket) {
-    this.notificationService.removeUserSocket(client.id);
+    this.chatsService.removeUserSocket(client.id);
 
     console.log(`Client ${client.id} disconnected`);
   }

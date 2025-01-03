@@ -3,13 +3,13 @@ import { IMessage } from './interfaces';
 import { AuthGuard } from 'src/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { SaveMessageService } from './save-message.service';
-import { NotificationService } from './notification.service';
+import { ChatsService } from './chats.service';
 
 @Controller('chat')
 export class ChatsController {
   constructor(
     private readonly saveMessageService: SaveMessageService,
-    private readonly notificationService: NotificationService,
+    private readonly chatsService: ChatsService,
   ) {}
 
   @ApiBearerAuth('access-token')
@@ -55,6 +55,6 @@ export class ChatsController {
     @Query('userId')
     userId: string,
   ) {
-    return this.notificationService.getChats(userId);
+    return this.chatsService.getChats(userId);
   }
 }

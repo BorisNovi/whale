@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { IMessage } from './interfaces';
+import { ChatsService } from './chats.service';
 
 @Injectable()
 export class SaveMessageService {
   private chatMessages: Record<string, IMessage[]> = {};
   private autoDeleteTimeouts: Record<string, NodeJS.Timeout | null> = {};
   private readonly autoDeleteDelayMinutes: number = 5; // min
+
+  constructor(private readonly chatsService: ChatsService) {}
 
   saveMessage(chatId: string, message: IMessage): void {
     const messageWithTimestamp = this.addTimestampToMessage(message);
@@ -47,9 +50,12 @@ export class SaveMessageService {
     );
   }
 
+  // Для удаления сообщений и личных чатов по истечению срока неактивности
   private clearMessages(chatId: string): void {
     console.log(`Clearing all messages for chat [${chatId}] due to inactivity`);
     delete this.chatMessages[chatId];
     delete this.autoDeleteTimeouts[chatId];
+
+    this.chatsService.removeChat(chatId);
   }
 }
