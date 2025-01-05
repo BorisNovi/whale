@@ -24,19 +24,14 @@ import {
 import { resizeObserver } from 'app/shared';
 import { CommonModule } from '@angular/common';
 import { RippleDirective } from 'app/shared/directives';
-import { IconChevronLineW300Component } from 'app/shared/icon-components';
 import { TooltipDirective } from 'app/components/tooltip/tooltip.directive';
+import { IconComponent } from 'app/components/icon/icon.component';
 
 @Component({
   selector: 'es-sidebar-item',
   templateUrl: './sidebar-item.component.html',
   styleUrls: ['./sidebar-item.component.scss'],
-  imports: [
-    CommonModule,
-    RippleDirective,
-    IconChevronLineW300Component,
-    TooltipDirective,
-  ],
+  imports: [CommonModule, RippleDirective, TooltipDirective, IconComponent],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,

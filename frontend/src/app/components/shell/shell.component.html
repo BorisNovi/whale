@@ -4,7 +4,7 @@
   <es-sidebar [isOpen]="isOpen">
     <es-sidebar-menu>
       <es-sidebar-item text="Global chat" (itemClick)="redirectToGlobalChat()">
-        <whale-icon-global-line-w500 icon></whale-icon-global-line-w500>
+        <whale-icon icon="forum"></whale-icon>
       </es-sidebar-item>
     </es-sidebar-menu>
     <es-sidebar-toggle (openEvent)="isOpen = $event"></es-sidebar-toggle>
@@ -17,7 +17,7 @@
           id="0"
           text="Private chats"
         >
-          <whale-icon-mail-line-w500 icon></whale-icon-mail-line-w500>
+          <whale-icon icon="chat"></whale-icon>
           @if (privateChatData().length) {
             <ng-template #items>
               @for (chatData of privateChatData(); track $index) {
@@ -41,14 +41,23 @@
 
     <es-sidebar-menu>
       <!-- <es-sidebar-item text="Notifications"> </es-sidebar-item> -->
-      <es-sidebar-item text="Settings">
-        <whale-icon-cog-line-w500 icon></whale-icon-cog-line-w500>
+      <es-sidebar-item text="Theme" (itemClick)="themeService.switchTheme()">
+        @let theme = themeService.getTheme$() | async;
+        <whale-icon
+          [icon]="
+            theme === 'light'
+              ? 'light_mode'
+              : theme === 'dark'
+                ? 'dark_mode'
+                : 'brightness_auto'
+          "
+        ></whale-icon>
       </es-sidebar-item>
     </es-sidebar-menu>
     <es-sidebar-divider></es-sidebar-divider>
     <es-sidebar-menu>
       <es-sidebar-item text="Log out" (itemClick)="logout()">
-        <whale-icon-chevron-line-w300 icon></whale-icon-chevron-line-w300>
+        <whale-icon icon="logout"></whale-icon>
       </es-sidebar-item>
     </es-sidebar-menu>
   </es-sidebar>
@@ -56,5 +65,4 @@
   <div class="shell__main__outlet">
     <router-outlet></router-outlet>
   </div>
-  <whale-icon-chevron-line-w300 icon></whale-icon-chevron-line-w300>
 </div>

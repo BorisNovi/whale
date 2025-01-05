@@ -10,8 +10,8 @@ import {
 import { ESSidebarCommonAttrService } from '../sidebar-common-attr.service';
 import { CommonModule } from '@angular/common';
 import { ESSidebarDividerComponent } from '../public-api';
-import { IconChevronLineW300Component } from 'app/shared/icon-components';
 import { RippleDirective } from 'app/shared/directives';
+import { IconComponent } from 'app/components/icon/icon.component';
 
 @Component({
   selector: 'es-sidebar-toggle',
@@ -21,7 +21,7 @@ import { RippleDirective } from 'app/shared/directives';
     CommonModule,
     ESSidebarDividerComponent,
     RippleDirective,
-    IconChevronLineW300Component,
+    IconComponent,
   ],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,

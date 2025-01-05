@@ -55,9 +55,13 @@
         left: buttonContainerWidth + 'px',
       }"
     >
-      <whale-icon-chevron-line-w300
-        [orientation]="(isNestedMenuOpen$ | async) ? 'down' : 'right'"
-      ></whale-icon-chevron-line-w300>
+      <whale-icon
+        [icon]="
+          (isNestedMenuOpen$ | async)
+            ? 'keyboard_arrow_down'
+            : 'keyboard_arrow_right'
+        "
+      ></whale-icon>
     </button>
   </div>
   <div

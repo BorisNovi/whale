@@ -1,6 +1,6 @@
-import { provideHttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ThemeService } from './shared';
 
 @Component({
   selector: 'whale-root',
@@ -11,4 +11,7 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'frontend';
+
+  // Services needet on app's initialization
+  private themeService = inject(ThemeService);
 }

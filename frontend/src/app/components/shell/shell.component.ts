@@ -33,13 +33,13 @@ import {
 import { ESSidebarMenuComponent } from '../sidebar/sidebar-menu/sidebar-menu.component';
 import { ESSidebarItemComponent } from '../sidebar/sidebar-item/sidebar-item.component';
 import {
-  IconChevronLineW300Component,
-  IconCogLineW500Component,
-  IconGlobalLineW500Component,
-  IconMailLineW500Component,
-} from 'app/shared/icon-components';
-import { IChatNotification, IUserAuth, SocketService } from 'app/shared';
+  IChatNotification,
+  IUserAuth,
+  SocketService,
+  ThemeService,
+} from 'app/shared';
 import { CommonModule } from '@angular/common';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'whale-shell',
@@ -55,10 +55,7 @@ import { CommonModule } from '@angular/common';
     ESSidebarScrollableComponent,
     ESSidebarMenuComponent,
     ESSidebarItemComponent,
-    IconChevronLineW300Component,
-    IconMailLineW500Component,
-    IconGlobalLineW500Component,
-    IconCogLineW500Component,
+    IconComponent,
   ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
@@ -75,6 +72,8 @@ export class ShellComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
   private store = inject(Store);
+
+  public themeService = inject(ThemeService);
 
   // @Input() color: 'default' | 'primary' | 'secondary';
   // @Input() width: number;

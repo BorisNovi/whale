@@ -1,4 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
+@font-face {
+  font-family: "Material Icons";
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local("Material Icons"),
+    local("MaterialIcons-Regular"),
+    url("assets/fonts/MaterialIcons-Regular.ttf") format("truetype");
+}
+
 *,
 *::before,
 *::after {
