@@ -1,33 +1,34 @@
 import { inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, fromEvent, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
-  private theme$ = new BehaviorSubject<string>('auto');
-  private themes = ['dark', 'light', 'auto'] as const;
+  private theme$ = new BehaviorSubject<'dark' | 'light' | 'auto'>('auto');
+  private systemTheme$ = new BehaviorSubject<'dark' | 'light'>(
+    this.detectSystemTheme(),
+  );
+  private themes: readonly ('dark' | 'light' | 'auto')[] = [
+    'dark',
+    'light',
+    'auto',
+  ];
   private renderer: Renderer2;
 
-  private rendererFactory = inject(RendererFactory2);
-
   constructor() {
-    this.renderer = this.rendererFactory.createRenderer(null, null);
+    const rendererFactory = inject(RendererFactory2);
+    this.renderer = rendererFactory.createRenderer(null, null);
 
-    const storedTheme = localStorage.getItem('whale-theme');
-    const currentTheme = this.themes.includes(
-      storedTheme as (typeof this.themes)[number],
-    )
-      ? (storedTheme as (typeof this.themes)[number])
-      : this.themes[2];
+    const storedTheme = this.getStoredTheme();
+    this.theme$.next(storedTheme);
+    this.applyTheme(storedTheme);
 
-    this.theme$.next(currentTheme);
-    this.applyTheme(currentTheme);
+    this.initSystemThemeListener();
   }
 
   switchTheme(): void {
-    const currentTheme = (localStorage.getItem('whale-theme') ||
-      this.themes[2]) as (typeof this.themes)[number];
+    const currentTheme = this.theme$.getValue();
     const currentIndex = this.themes.indexOf(currentTheme);
     const nextIndex = (currentIndex + 1) % this.themes.length;
     const nextTheme = this.themes[nextIndex];
@@ -38,12 +39,17 @@ export class ThemeService {
     this.applyTheme(nextTheme);
   }
 
-  private applyTheme(theme: string): void {
-    const systemTheme = this.detectSystemTheme();
+  getTheme$(): Observable<'dark' | 'light' | 'auto'> {
+    return this.theme$.asObservable();
+  }
+
+  private applyTheme(theme: 'dark' | 'light' | 'auto'): void {
+    const systemTheme = this.systemTheme$.getValue();
     const appliedTheme = theme === 'auto' ? systemTheme : theme;
 
-    this.themes.forEach((t) => this.renderer.removeClass(document.body, t));
-    this.renderer.addClass(document.body, appliedTheme);
+    const body = this.renderer.selectRootElement('body', true);
+    this.themes.forEach((t) => this.renderer.removeClass(body, t));
+    this.renderer.addClass(body, appliedTheme);
   }
 
   private detectSystemTheme(): 'light' | 'dark' {
@@ -52,7 +58,29 @@ export class ThemeService {
       : 'light';
   }
 
-  getTheme$(): Observable<string> {
-    return this.theme$.asObservable();
+  private initSystemThemeListener(): void {
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    fromEvent<MediaQueryListEvent>(darkModeQuery, 'change').subscribe(
+      (event) => {
+        const systemTheme = event.matches ? 'dark' : 'light';
+        this.systemTheme$.next(systemTheme);
+
+        if (this.theme$.getValue() === 'auto') {
+          this.applyTheme('auto');
+        }
+      },
+    );
+  }
+
+  private getStoredTheme(): 'dark' | 'light' | 'auto' {
+    try {
+      const storedTheme = localStorage.getItem('whale-theme');
+      return this.themes.includes(storedTheme as 'dark' | 'light' | 'auto')
+        ? (storedTheme as 'dark' | 'light' | 'auto')
+        : 'auto';
+    } catch {
+      return 'auto';
+    }
   }
 }
