@@ -1,18 +1,23 @@
 <div class="chat__container">
   <div class="chat__messages-container" #messagesContainer>
     @for (message of messagesS(); track $index) {
+      @let user = currentUser();
       <div
         class="chat__message"
         [ngStyle]="{
           'align-self':
-            currentUser()?.username === message.username
-              ? 'flex-end'
-              : 'flex-start',
+            user?.username === message.username ? 'flex-end' : 'flex-start',
         }"
       >
         <div
           class="chat__message__username"
+          [ngClass]="{
+            chat__message__username_interactive:
+              user?.username !== message.username,
+          }"
           (click)="onUsernameClick(message.userId)"
+          (keydown.enter)="onUsernameClick(message.userId)"
+          [tabindex]="user?.username === message.username ? '-1' : '0'"
         >
           <span
             class="chat__message__indicator"
@@ -24,6 +29,7 @@
       </div>
     }
   </div>
+  <span class="chat__line"></span>
   <div class="chat__input-container">
     <textarea
       class="chat__input"

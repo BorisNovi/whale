@@ -1,12 +1,19 @@
 @mixin button-style() {
   border: none;
   padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 6px;
+  white-space: nowrap;
+  @include text-body100();
   cursor: pointer;
   transition: background-color 0.3s ease;
 
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-monoA-A500);
+  }
+
   &:disabled {
-    background-color: var(--color-monoA-A200);
+    opacity: 0.3;
     pointer-events: none;
   }
 }

@@ -25,7 +25,7 @@ import {
     `
       .tooltip {
         position: fixed;
-        background-color: var(--color-monoA-A800);
+        background-color: var(--color-monoB-A800);
         color: var(--color-monoB-A900);
         padding: 8px;
         border-radius: 4px;

@@ -1,3 +1,5 @@
+@import "../../../../assets/mixins.scss";
+
 .es-sidebar-item {
   &__root {
     margin: 0 8px;
@@ -15,9 +17,7 @@
     font-family: inherit;
     cursor: pointer;
     transition: background-color 150ms;
-
     background-color: transparent;
-    color: var(--color-monoA-A800);
 
     &:focus-visible {
       outline: none;
@@ -51,6 +51,7 @@
 
       &__text {
         white-space: nowrap;
+        @include text-body100();
       }
     }
 
@@ -172,6 +173,7 @@
 
       &__text {
         padding: 6px 16px !important;
+        @include text-body100();
       }
     }
 
@@ -217,6 +219,7 @@
               &__text {
                 padding: 0 !important;
                 display: block !important;
+                @include text-body100();
               }
             }
           }

@@ -29,7 +29,7 @@
 
   &__form {
     width: 100%;
-    border: 2px solid var(--color-primary-A700);
+    box-shadow: inset 0 0 0 2px var(--color-monoA-A500);
     display: flex;
     justify-content: flex-start;
     align-items: stretch;
@@ -42,18 +42,25 @@
     &__input {
       @include text-body100();
       padding: 10px;
-      border-radius: 5px;
+      border-radius: 6px;
       border: none;
+      background-color: var(--color-monoB-A500);
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-monoA-A500);
+      }
     }
 
     &__button {
       @include button-style();
       @include text-body100();
-      color: var(--color-monoB-A900);
-      background-color: var(--color-primary-A700);
+      background-color: var(--color-primary-A600);
 
-      &:hover {
-        background-color: var(--color-primary-A900);
+      @media (hover: hover) {
+        &:hover {
+          background-color: var(--color-primary-A800);
+        }
       }
 
       &:active {
