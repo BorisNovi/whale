@@ -5,7 +5,7 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
-import { metaReducers, reducers } from './state';
+import { ChatsEffects, metaReducers, reducers } from './state';
 import { AuthEffects } from './state/auth/auth.effects';
 import { authInterceptor } from './shared/interceptors/auth.interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -16,7 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideStore(reducers, { metaReducers }),
-    provideEffects(AuthEffects),
+    provideEffects([AuthEffects, ChatsEffects]),
     provideAnimations(),
   ],
 };

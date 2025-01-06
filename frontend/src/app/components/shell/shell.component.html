@@ -1,7 +1,7 @@
 <whale-notification-line></whale-notification-line>
 
 <div class="shell__main">
-  <es-sidebar [isOpen]="isOpen">
+  <es-sidebar [isOpen]="isOpen" [width]="200">
     <es-sidebar-menu>
       <es-sidebar-item text="Global chat" (itemClick)="redirectToGlobalChat()">
         <whale-icon icon="forum"></whale-icon>
@@ -40,7 +40,6 @@
     <es-sidebar-spacer></es-sidebar-spacer>
 
     <es-sidebar-menu>
-      <!-- <es-sidebar-item text="Notifications"> </es-sidebar-item> -->
       <es-sidebar-item text="Theme" (itemClick)="themeService.switchTheme()">
         @let theme = themeService.getTheme$() | async;
         <whale-icon

@@ -1,4 +1,4 @@
-import { ActionReducerMap, createReducer, on } from '@ngrx/store';
+import { createReducer, on } from '@ngrx/store';
 import { AuthActions } from './auth.actions';
 import { IUserAuth } from '../../shared';
 
@@ -9,7 +9,7 @@ export interface AuthState {
   error: string | null;
 }
 
-export const initialState: AuthState = {
+export const initialAuthState: AuthState = {
   user: null,
   isAuthenticated: false,
   loading: false,
@@ -18,7 +18,7 @@ export const initialState: AuthState = {
 
 // TODO: заменить localstorage на сервис, который проверяет, браузер ли наша платформа.
 export const hydratedAuthState: AuthState =
-  JSON.parse(localStorage.getItem('auth') || 'null') || initialState;
+  JSON.parse(localStorage.getItem('auth') || 'null') || initialAuthState;
 
 export const authReducer = createReducer(
   hydratedAuthState,

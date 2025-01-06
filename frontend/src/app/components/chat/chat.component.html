@@ -1,23 +1,41 @@
+@let messageList = messagesS();
+@let user = currentUser();
+
 <div class="chat__container">
+  @let firstMessage = messageList[0];
+  @if (firstMessage && false) {
+    <div class="chat__heading">
+      <div class="chat__heading__info">
+        <span
+          class="chat__heading__info__color"
+          [ngStyle]="{ 'background-color': firstMessage.color }"
+        ></span>
+        <span class="chat__heading__info__name">{{
+          firstMessage.username
+        }}</span>
+      </div>
+      <div class="chat__heading__actions"></div>
+    </div>
+  }
+
   <div class="chat__messages-container" #messagesContainer>
-    @for (message of messagesS(); track $index) {
-      @let user = currentUser();
+    @for (message of messageList; track $index) {
       <div
         class="chat__message"
         [ngStyle]="{
           'align-self':
-            user?.username === message.username ? 'flex-end' : 'flex-start',
+            user?.userId === message.userId ? 'flex-end' : 'flex-start',
         }"
       >
         <div
           class="chat__message__username"
           [ngClass]="{
             chat__message__username_interactive:
-              user?.username !== message.username,
+              user?.userId !== message.userId,
           }"
           (click)="onUsernameClick(message.userId)"
           (keydown.enter)="onUsernameClick(message.userId)"
-          [tabindex]="user?.username === message.username ? '-1' : '0'"
+          [tabindex]="user?.userId === message.userId ? '-1' : '0'"
         >
           <span
             class="chat__message__indicator"

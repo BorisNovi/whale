@@ -129,41 +129,6 @@ export class SocketService {
   }
 
   /**
-   * Retrieve messages via API.
-   * @param chatId Id of chat which messages we want to get
-   * @param count Number of messages to retrieve
-   * @returns Observable with an array of messages
-   */
-  public getMessages(chatId: string, count?: number): Observable<IMessage[]> {
-    let params = new HttpParams();
-    params = params.set('chatId', chatId);
-
-    if (count) {
-      params = params.set('count', count.toString());
-    }
-
-    return this.http.get<IMessage[]>(
-      `${environment.baseUrl}/api/chat/messages`,
-      { params },
-    );
-  }
-
-  /**
-   * Retrieve chats via API.
-   * @param userId Id of user which chats we want to get
-   * @returns Observable with an array of chats
-   */
-  public getChats(userId: string): Observable<IChatNotification[]> {
-    let params = new HttpParams();
-    params = params.set('userId', userId);
-
-    return this.http.get<IChatNotification[]>(
-      `${environment.baseUrl}/api/chat/chats`,
-      { params },
-    );
-  }
-
-  /**
    * Clear subscriptions
    */
   private clearSubscriptions(): void {

@@ -9,6 +9,43 @@
     margin: 0;
   }
 
+  &__heading {
+    height: 2rem;
+    margin: 0.5rem 1rem;
+
+    &__info {
+      display: flex;
+      gap: 20px;
+
+      &__color {
+        display: flex;
+        width: 10px;
+        height: 2rem;
+        border-radius: 40px;
+      }
+
+      &__name {
+        @include text-body200();
+      }
+    }
+
+    &__actions {
+    }
+
+    &::after {
+      content: "";
+      position: relative;
+      display: block;
+      height: 2rem;
+      pointer-events: none;
+      background: linear-gradient(
+        to bottom,
+        var(--color-background),
+        transparent
+      );
+    }
+  }
+
   &__messages-container {
     flex-grow: 1;
     display: flex;

@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { map, merge, Observable } from 'rxjs';
-import { IMessage, SocketService } from '../../shared';
+import { ChatsService, IMessage, SocketService } from '../../shared';
 import { ChatComponent } from '../../components';
 import { Router } from '@angular/router';
 
@@ -22,6 +22,7 @@ import { Router } from '@angular/router';
 })
 export class GroupChatComponent implements OnInit {
   private socketService = inject(SocketService);
+  private chatsService = inject(ChatsService);
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
 
@@ -29,7 +30,7 @@ export class GroupChatComponent implements OnInit {
 
   public ngOnInit(): void {
     merge(
-      this.socketService
+      this.chatsService
         .getMessages('public')
         .pipe(map((msgList) => msgList.reverse())),
       this.socketService.onMessage('message').pipe(map((msg) => [msg])),

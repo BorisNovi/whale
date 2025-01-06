@@ -10,7 +10,12 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterOutlet } from '@angular/router';
 import { Store, select } from '@ngrx/store';
-import { selectAuthState, AuthActions, AuthState } from '../../state';
+import {
+  selectAuthState,
+  AuthActions,
+  AuthState,
+  ChatsActions,
+} from '../../state';
 import {
   catchError,
   EMPTY,
@@ -19,6 +24,7 @@ import {
   merge,
   mergeMap,
   Observable,
+  pipe,
   scan,
   tap,
 } from 'rxjs';
@@ -33,6 +39,7 @@ import {
 import { ESSidebarMenuComponent } from '../sidebar/sidebar-menu/sidebar-menu.component';
 import { ESSidebarItemComponent } from '../sidebar/sidebar-item/sidebar-item.component';
 import {
+  ChatsService,
   IChatNotification,
   IUserAuth,
   SocketService,
@@ -40,6 +47,8 @@ import {
 } from 'app/shared';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '../icon/icon.component';
+import { selectChats, selectChatsState } from 'app/state/chats/chats.selectors';
+import { ChatsState } from 'app/state/chats/chats.reducer';
 
 @Component({
   selector: 'whale-shell',
@@ -63,12 +72,12 @@ import { IconComponent } from '../icon/icon.component';
 })
 export class ShellComponent implements OnInit {
   public authState$: Observable<AuthState>;
+  public chatsState$: Observable<ChatsState>;
   public user: IUserAuth | null = null;
   public isAuthentificated = false;
 
   public privateChatData = signal<IChatNotification[]>([]);
 
-  private socketService = inject(SocketService);
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
   private store = inject(Store);
@@ -86,6 +95,7 @@ export class ShellComponent implements OnInit {
 
   constructor() {
     this.authState$ = this.store.pipe(select(selectAuthState));
+    this.chatsState$ = this.store.pipe(select(selectChatsState));
 
     this.authState$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -100,29 +110,10 @@ export class ShellComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    merge(
-      this.socketService
-        .getChats(this.user?.userId || '')
-        .pipe(mergeMap((chats: IChatNotification[]) => from(chats))),
-      this.socketService.onMessage('newChat'),
-    )
-      .pipe(
-        tap((chats) => console.log(chats)),
-        catchError((err) => {
-          console.error('WebSocket error:', err);
-          return EMPTY;
-        }),
-        scan((acc: IChatNotification[], msg: IChatNotification) => {
-          if (!acc.some((chat) => chat.chatId === msg.chatId)) {
-            return [...acc, msg];
-          }
-          return acc;
-        }, []),
-        tap((chats) => console.log(chats)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((uniqueChats) => {
-        this.privateChatData.set(uniqueChats);
+    this.chatsState$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((chatsState) => {
+        this.privateChatData.set(chatsState.chats);
       });
   }
 

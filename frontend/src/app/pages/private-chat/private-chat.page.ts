@@ -11,7 +11,7 @@ import {
 } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ChatComponent } from 'app/components';
-import { IMessage, SocketService } from 'app/shared';
+import { ChatsService, IMessage, SocketService } from 'app/shared';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -25,6 +25,7 @@ export class PrivateChatPage implements OnInit {
   public chatId = '';
 
   private socketService = inject(SocketService);
+  private chatsService = inject(ChatsService);
   private destroyRef = inject(DestroyRef);
   private route = inject(ActivatedRoute);
 
@@ -43,7 +44,7 @@ export class PrivateChatPage implements OnInit {
         }),
         switchMap((chatId) =>
           merge(
-            this.socketService
+            this.chatsService
               .getMessages(chatId)
               .pipe(map((msgList) => msgList.reverse())),
             this.socketService
