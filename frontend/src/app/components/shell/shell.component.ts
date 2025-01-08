@@ -16,18 +16,7 @@ import {
   AuthState,
   ChatsActions,
 } from '../../state';
-import {
-  catchError,
-  EMPTY,
-  from,
-  map,
-  merge,
-  mergeMap,
-  Observable,
-  pipe,
-  scan,
-  tap,
-} from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { NotificationLineComponent } from '../notification-line/notification-line.component';
 import {
   ESSidebarComponent,
@@ -47,7 +36,7 @@ import {
 } from 'app/shared';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '../icon/icon.component';
-import { selectChats, selectChatsState } from 'app/state/chats/chats.selectors';
+import { selectChatsState } from 'app/state/chats/chats.selectors';
 import { ChatsState } from 'app/state/chats/chats.reducer';
 
 @Component({
@@ -83,6 +72,8 @@ export class ShellComponent implements OnInit {
   private store = inject(Store);
 
   public themeService = inject(ThemeService);
+  public chatsService = inject(ChatsService);
+  public socketService = inject(SocketService);
 
   // @Input() color: 'default' | 'primary' | 'secondary';
   // @Input() width: number;
@@ -110,11 +101,44 @@ export class ShellComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.chatsState$
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    this.store.dispatch(ChatsActions.loadChatsRequest());
+
+    this.store
+      .pipe(select(selectChatsState))
+      .pipe(
+        tap((chat) => console.log('Chats:', chat)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((chatsState) => {
         this.privateChatData.set(chatsState.chats);
       });
+
+    // merge(
+    //   this.chatsService
+    //     .getChats()
+    //     .pipe(mergeMap((chats: IChatNotification[]) => from(chats))),
+    //   this.socketService
+    //     .onMessage('newChat')
+    //     .pipe(tap((chats) => console.log('Chat by ws in shell:', chats))),
+    // )
+    //   .pipe(
+    //     tap((chats) => console.log(chats)),
+    //     catchError((err) => {
+    //       console.error('WebSocket error:', err);
+    //       return EMPTY;
+    //     }),
+    //     scan((acc: IChatNotification[], msg: IChatNotification) => {
+    //       if (!acc.some((chat) => chat.chatId === msg.chatId)) {
+    //         return [...acc, msg];
+    //       }
+    //       return acc;
+    //     }, []),
+    //     tap((chats) => console.log(chats)),
+    //     takeUntilDestroyed(this.destroyRef),
+    //   )
+    //   .subscribe((uniqueChats) => {
+    //     this.privateChatData.set(uniqueChats);
+    //   });
   }
 
   public redirectToGlobalChat(): void {

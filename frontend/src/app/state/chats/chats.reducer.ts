@@ -16,24 +16,26 @@ export const initialChatsState: ChatsState = {
 
 export const chatsReducer = createReducer(
   initialChatsState,
-  on(ChatsActions.loadChats, (state) => ({
+  on(ChatsActions.loadChatsRequest, (state) => ({
     ...state,
     loading: true,
     error: null,
   })),
-  on(ChatsActions.loadChatsSuccess, (state, { chats }) => ({
-    ...state,
-    chats,
-    loading: false,
-    error: null,
-  })),
-  on(ChatsActions.loadChatsFailure, (state, { error }) => ({
+  on(ChatsActions.loadChatsError, (state, { error }) => ({
     ...state,
     loading: false,
     error,
   })),
-  on(ChatsActions.updateChats, (state, { chats }) => ({
+  on(ChatsActions.setChats, (state, { chats }) => ({
     ...state,
+    loading: false,
+    error: null,
     chats,
+  })),
+  on(ChatsActions.clearAllChats, (state) => ({
+    ...state,
+    loading: false,
+    chats: [],
+    error: null,
   })),
 );

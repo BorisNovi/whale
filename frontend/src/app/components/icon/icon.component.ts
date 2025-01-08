@@ -6,7 +6,12 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   standalone: true,
   imports: [NgStyle],
   template: `
-    <span class="icon" [ngStyle]="{ 'font-size': size }">{{ icon }}</span>
+    <span class="icon" [ngStyle]="{ 'font-size': size }"
+      >{{ icon }}
+      @if (badge) {
+        <span class="icon__badge">{{ badge }}</span>
+      }
+    </span>
   `,
   styleUrl: './icon.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,4 +19,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export class IconComponent {
   @Input() icon!: string;
   @Input() size = '24px';
+  @Input() badge?: string | number;
 }

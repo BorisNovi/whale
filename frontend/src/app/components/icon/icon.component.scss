@@ -15,6 +15,7 @@
   word-wrap: normal;
   white-space: nowrap;
   direction: ltr;
+  position: relative;
 
   /* Support for all WebKit browsers. */
   -webkit-font-smoothing: antialiased;
@@ -26,4 +27,21 @@
 
   /* Support for IE. */
   font-feature-settings: "liga";
+
+  &__badge {
+    color: var(--color-monoA-A900);
+    font-size: 14px;
+    font-family: monospace;
+    font-weight: 800;
+    background-color: var(--color-secondary-A400);
+
+    display: inline-block;
+    border-radius: 4px;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    right: -10%;
+    top: -10%;
+    backdrop-filter: blur(2px);
+  }
 }

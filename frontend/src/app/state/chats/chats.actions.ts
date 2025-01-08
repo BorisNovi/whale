@@ -4,9 +4,9 @@ import { IChatNotification } from '../../shared';
 export const ChatsActions = createActionGroup({
   source: 'Chats',
   events: {
-    'Load Chats': emptyProps(),
-    'Load Chats Success': props<{ chats: IChatNotification[] }>(),
-    'Load Chats Failure': props<{ error: string }>(),
-    'Update Chats': props<{ chats: IChatNotification[] }>(),
+    'Load Chats Request': emptyProps(),
+    'Load Chats Error': props<{ error: string }>(),
+    'Set Chats': props<{ chats: IChatNotification[] }>(),
+    'Clear All Chats': emptyProps(),
   },
 });
