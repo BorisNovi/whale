@@ -35,12 +35,17 @@
     align-items: stretch;
     height: auto;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     padding: 20px;
     border-radius: 7px;
 
+    &__fields {
+
+    }
+
     &__input {
       @include text-body100();
+      width: 100%;
       padding: 10px;
       border-radius: 6px;
       border: none;
@@ -50,6 +55,13 @@
         outline: none;
         box-shadow: inset 0 0 0 2px var(--color-monoA-A500);
       }
+    }
+
+    &__error {
+      @include text-caption();
+      color: var(--color-warn);
+      margin: 2px 0 0;
+      height: 16px;
     }
 
     &__button {

@@ -51,19 +51,20 @@ export class AuthController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Username is already online' })
+  @ApiResponse({
+    status: 400,
+    description: 'Username is already online / Username is required',
+  })
   @Post('login')
   async login(
     @Body('username') username: string,
   ): Promise<{ username: string; token: IToken }> {
     if (!username) {
-      throw new BadRequestException('Username is required.');
+      throw new BadRequestException('USERNAME_REQUIRED');
     }
 
     if (this.authService.isUsernameOnline(username)) {
-      throw new BadRequestException(
-        'This username is already online. Please use a different username.',
-      );
+      throw new BadRequestException('USER_ALREADY_ONLINE');
     }
 
     return this.authService.login(username);
@@ -108,9 +109,7 @@ export class AuthController {
     @Headers('authorization') authHeader: string,
   ): Promise<{ success: boolean; message: string }> {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException(
-        'Missing or invalid authorization header',
-      );
+      throw new UnauthorizedException('MISSING_OR_INVALID_HEADERS');
     }
 
     const accessToken = authHeader.split(' ')[1];

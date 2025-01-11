@@ -49,7 +49,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           }),
         );
       }
-      return throwError(() => new Error(err));
+      return throwError(() => err);
     }),
   );
 };

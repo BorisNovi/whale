@@ -21,13 +21,32 @@
   <h2 class="login__header">Whale anonymous chat</h2>
 
   <form [formGroup]="loginForm" class="login__form" (ngSubmit)="onSubmit()">
-    <input
+    <div class="login__form__fields">
+      <input
       class="login__form__input"
       formControlName="username"
       type="text"
       name="username"
       placeholder="Just username..."
     />
+      <div class="login__form__error">
+        <!-- TODO: добавить переводчик -->
+         @switch (true) {
+          @case (authErrorS()?.error.message === 'USER_ALREADY_ONLINE') {
+            You can't use this name!
+          }
+
+          @case (!!(loginForm.controls['username'].dirty && loginForm.controls['username'].errors?.['required'])) {
+            Username is required
+          }
+
+          @case (!!(loginForm.controls['username'].dirty && loginForm.controls['username'].errors?.['minlength'])) {
+            Minimal lenght is 3
+          }
+         }
+      </div>
+    </div>
+
 
     <button
       class="login__form__button"

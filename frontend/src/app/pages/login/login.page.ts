@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, DestroyRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -13,11 +19,13 @@ import { Router } from '@angular/router';
 import { AuthActions, AuthState, selectAuthState } from '../../state';
 import { select, Store } from '@ngrx/store';
 import { RippleDirective } from 'app/shared/directives';
+import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'whale-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RippleDirective],
+  imports: [ReactiveFormsModule, RippleDirective, CommonModule],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +33,7 @@ import { RippleDirective } from 'app/shared/directives';
 export class LoginPageComponent {
   public userAuthData: IUserAuth | null = null;
   public authState$: Observable<AuthState>;
+  public authErrorS: WritableSignal<HttpErrorResponse | null> = signal(null);
 
   public loginForm = new FormGroup({
     username: new FormControl('', [
@@ -47,7 +56,15 @@ export class LoginPageComponent {
         if (authData.isAuthenticated && authData.user) {
           this.redirectLoginedUser();
         }
+
+        if (authData.error) {
+          this.authErrorS.set(authData.error);
+        }
       });
+
+    this.loginForm.controls['username'].valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.authErrorS.set(null));
   }
 
   public onSubmit(): void {

@@ -24,9 +24,7 @@ export class AuthEffects {
       mergeMap(({ username }) =>
         this.authService.logIn(username).pipe(
           map((user) => AuthActions.logInSuccess({ user })),
-          catchError((error) =>
-            of(AuthActions.logInFailure({ error: error.message })),
-          ),
+          catchError((error) => of(AuthActions.logInFailure({ error }))),
         ),
       ),
     ),

@@ -1,12 +1,13 @@
 import { createReducer, on } from '@ngrx/store';
 import { AuthActions } from './auth.actions';
 import { IUserAuth } from '../../shared';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface AuthState {
   user: IUserAuth | null;
   isAuthenticated: boolean;
   loading: boolean;
-  error: string | null;
+  error: HttpErrorResponse | null;
 }
 
 export const initialAuthState: AuthState = {
