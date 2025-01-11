@@ -1,12 +1,11 @@
-import { Injectable, effect, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { Store } from '@ngrx/store';
 import { AuthActions, selectUser } from '../../state';
-import { Observable, Subject } from 'rxjs';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { distinctUntilChanged, map, Observable, Subject } from 'rxjs';
 import { NotificationService } from './notification.service';
 import { environment } from '@environments/environment';
-import { IChatNotification, IMessage } from '..';
+import { IMessage } from '..';
 
 @Injectable({
   providedIn: 'root',
@@ -16,19 +15,44 @@ export class SocketService {
   private eventSubjects: Record<string, Subject<any>> = {};
 
   private store = inject(Store);
-  private http = inject(HttpClient);
   private notificationService = inject(NotificationService);
 
+  private isSocketInitialized = false;
+
   constructor() {
-    // Initialize the socket connection when the user changes
-    effect(() => {
-      const user = this.store.selectSignal(selectUser)();
-      if (user) {
-        this.initializeSocket(user.token.accessToken);
-      } else {
-        this.disconnect(); // Disconnect the socket if the user is not available
-      }
-    });
+    this.store
+      .select(selectUser)
+      .pipe(
+        map((user) => user?.token.accessToken),
+        distinctUntilChanged(),
+      )
+      .subscribe((accessToken) => {
+        if (accessToken) {
+          // If socket not init
+          if (!this.isSocketInitialized) {
+            this.initializeSocket(accessToken);
+            this.isSocketInitialized = true;
+            console.log('Socket initialized with token:', accessToken);
+          } else if (this.socket) {
+            // If socket already init, update token without reinit
+            this.updateSocketToken(accessToken);
+            console.log('Socket token updated:', accessToken);
+          }
+        } else {
+          // If token is empty, disconnect (user logged out)
+          this.disconnect();
+        }
+      });
+  }
+
+  private updateSocketToken(accessToken: string): void {
+    if (this.socket) {
+      this.socket.io.opts.query = { Authorization: accessToken };
+
+      this.socket.disconnect();
+      this.socket.connect();
+      console.log('Socket token updated:', accessToken);
+    }
   }
 
   /**
@@ -133,8 +157,6 @@ export class SocketService {
    */
   private clearSubscriptions(): void {
     Object.keys(this.eventSubjects).forEach((event) => {
-      console.log(`Clearing subscription for event: ${event}`);
-
       if (this.socket) {
         this.socket.off(event);
       }
@@ -152,7 +174,7 @@ export class SocketService {
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
-      console.log('Socket disconnected');
+      this.isSocketInitialized = false;
     }
   }
 }
