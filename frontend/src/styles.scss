@@ -113,6 +113,7 @@ $color-background-dark-mode: #424242;
 
 body {
   height: 100vh;
+  height: 100dvh;
   margin: 0;
   background-color: var(--color-background);
   color: var(--color-monoA);
