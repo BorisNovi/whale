@@ -20,6 +20,9 @@ services:
       - postgres
     networks:
       - app-network
+    # volumes: # Uncomment for development
+    #   - ./backend:/app
+    # command: npm run start:dev
 
   postgres:
     image: postgres:latest

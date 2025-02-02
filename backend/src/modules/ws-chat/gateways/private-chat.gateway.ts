@@ -70,16 +70,16 @@ export class PrivateChatGateway
   @SubscribeMessage('privateMessage')
   @UseGuards(WsAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
-  handlePrivateMessage(
+  async handlePrivateMessage(
     @MessageBody() messageDto: CreateMessageDto,
     @ConnectedSocket() client: Socket,
-  ): void {
+  ): Promise<void> {
     if (!messageDto.chatId) {
       throw new Error('chatId is required in messageDto');
     }
 
     const token = this.extractToken(client);
-    const senderData = this.authService.getUserData(token);
+    const senderData = await this.authService.getUserData(token);
     const [creatorId, targetUserId] = messageDto.chatId.split(':');
 
     if (
@@ -110,7 +110,8 @@ export class PrivateChatGateway
     this.saveMessageService.saveMessage(messageDto.chatId, message);
 
     // Сохраняем чат для обоих пользователей
-    const targetUserData = this.authService.getFullUserDataById(targetUserId);
+    const targetUserData =
+      await this.authService.getFullUserDataById(targetUserId);
     this.chatsService.saveChat(senderData, targetUserData, messageDto.chatId);
 
     // Уведомляем целевого пользователя о новом сообщении

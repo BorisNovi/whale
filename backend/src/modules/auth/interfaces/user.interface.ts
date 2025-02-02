@@ -5,4 +5,5 @@ export interface IUser {
   userId: string;
   token: IToken;
   color: string;
+  lastSeen: Date;
 }

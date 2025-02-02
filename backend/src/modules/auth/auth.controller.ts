@@ -63,7 +63,7 @@ export class AuthController {
       throw new BadRequestException('USERNAME_REQUIRED');
     }
 
-    if (this.authService.isUsernameOnline(username)) {
+    if (await this.authService.isUserLoggedIn(username)) {
       throw new BadRequestException('USER_ALREADY_ONLINE');
     }
 

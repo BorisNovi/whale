@@ -1,26 +1,29 @@
 import {
   CanActivate,
   ExecutionContext,
+  forwardRef,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { AuthService } from 'src/modules/auth/auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+  ) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const accessToken = this.extractTokenFromHeader(request);
+
     if (!accessToken) {
       throw new UnauthorizedException('Token not found');
     }
 
-    const isValid = this.authService.validateUser(accessToken);
+    const isValid = await this.authService.validateUser(accessToken);
 
     if (!isValid) {
       throw new UnauthorizedException('Invalid token');

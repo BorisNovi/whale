@@ -1,23 +1,41 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
-import { Observable } from 'rxjs';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { Socket } from 'socket.io';
 
 @Injectable()
 export class WsAuthGuard implements CanActivate {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+  ) {
+    console.log('WS GUARD');
+  }
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    console.log('CHECK');
     const client: Socket = context.switchToWs().getClient<Socket>();
     const accessToken = this.extractTokenFromHandshake(client);
 
-    console.log('TOKEN IN WS AUTH: ', accessToken);
-    if (!accessToken || !this.authService.validateUser(accessToken)) {
+    if (!accessToken) {
       throw new WsException({
-        message: 'Authorization: Invalid or missing token',
+        message: 'Authorization: Missing access token',
+        code: 401,
+      });
+    }
+
+    const isValid = await this.authService.validateUser(accessToken);
+
+    if (!isValid) {
+      console.log('INVALID TOKEN');
+      throw new WsException({
+        message: 'Authorization: Invalid access token',
         code: 401,
       });
     }

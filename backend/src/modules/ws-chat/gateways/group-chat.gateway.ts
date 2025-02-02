@@ -51,9 +51,9 @@ export class GroupChatGateway
     );
   }
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     const token = this.extractToken(client);
-    const userData = this.authService.getUserData(token);
+    const userData = await this.authService.getUserData(token);
 
     if (userData?.userId) {
       this.chatsService.addUserSocket(userData.userId, client.id);
@@ -85,13 +85,19 @@ export class GroupChatGateway
   @SubscribeMessage('message')
   @UseGuards(WsAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
-  handleMessage(
+  async handleMessage(
     @MessageBody() messageDto: CreateMessageDto,
     @ConnectedSocket() client: Socket,
-  ): void {
+  ): Promise<void> {
     const token = this.extractToken(client);
 
-    const senderData = this.authService.getUserData(token);
+    // Получаем данные пользователя из БД
+    const senderData = await this.authService.getUserData(token);
+
+    if (!senderData) {
+      console.log('Invalid token or user not found');
+      return;
+    }
 
     const message: IMessage = {
       username: senderData.username,
@@ -103,6 +109,7 @@ export class GroupChatGateway
 
     this.saveMessageService.saveMessage('public', message);
 
+    // Отправляем сообщение всем клиентам
     this.server.emit('message', message);
   }
 
