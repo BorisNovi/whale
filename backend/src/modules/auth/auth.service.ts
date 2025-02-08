@@ -33,7 +33,7 @@ export class AuthService {
 
     await this.tokenModel.destroy({ where: { userId: user.userId } });
 
-    const token = this.generateToken(user.userId);
+    const token = this.generateToken(user.userId, user.username, user.color);
 
     await this.tokenModel.create({
       userId: user.userId,
@@ -86,6 +86,30 @@ export class AuthService {
     accessToken: string,
     key?: string,
   ): Promise<Partial<IUser> | null> {
+    try {
+      // Попытка извлечь данные из токена
+      const decoded = jwt.verify(accessToken, this.secretKey) as {
+        userId: string;
+        username: string;
+        color: string;
+      };
+      // Если токен имеет данные пользователя
+      if (decoded) {
+        if (key) {
+          return { [key]: decoded[key] }; // возвращаем конкретное поле из токена
+        }
+
+        return {
+          username: decoded.username,
+          userId: decoded.userId,
+          color: decoded.color,
+        };
+      }
+    } catch (e) {
+      console.error('Error extracting data from token', e);
+    }
+
+    // Если данных в токене нет или они некорректны, получаем их из базы данных
     const token = await this.tokenModel.findOne({ where: { accessToken } });
 
     if (!token) {
@@ -112,7 +136,28 @@ export class AuthService {
     };
   }
 
+  // Обновленный метод getFullUserDataById с приоритетом данных из токена
   async getFullUserDataById(userId: string): Promise<Partial<IUser> | null> {
+    try {
+      // Попытка извлечь данные из токена
+      const decoded = jwt.verify(userId, this.secretKey) as {
+        userId: string;
+        username: string;
+        color: string;
+      };
+
+      if (decoded) {
+        return {
+          username: decoded.username,
+          userId: decoded.userId,
+          color: decoded.color,
+        };
+      }
+    } catch (e) {
+      console.error('Error extracting data from token', e);
+    }
+
+    // Если в токене нет данных, ищем их в базе данных
     const user = await this.userModel.findOne({ where: { userId } });
 
     if (!user) {
@@ -126,13 +171,17 @@ export class AuthService {
     };
   }
 
-  private generateToken(userId: string): IToken {
-    const accessPayload = { userId, type: 'access' };
+  private generateToken(
+    userId: string,
+    username: string,
+    color: string,
+  ): IToken {
+    const accessPayload = { userId, username, color, type: 'access' };
     const accessToken = jwt.sign(accessPayload, this.secretKey, {
       expiresIn: '4h',
     });
 
-    const refreshPayload = { userId, type: 'refresh' };
+    const refreshPayload = { userId, username, color, type: 'refresh' };
     const refreshToken = jwt.sign(refreshPayload, this.secretKey, {
       expiresIn: '7d',
     });
@@ -143,6 +192,8 @@ export class AuthService {
     try {
       const decoded = jwt.verify(refreshToken, this.secretKey) as {
         userId: string;
+        username: string;
+        color: string;
       };
       const token = await this.tokenModel.findOne({ where: { refreshToken } });
 
@@ -150,7 +201,11 @@ export class AuthService {
         throw new UnauthorizedException('Invalid or expired refresh token');
       }
 
-      const newTokens = this.generateToken(decoded.userId);
+      const newTokens = this.generateToken(
+        decoded.userId,
+        decoded.username,
+        decoded.color,
+      );
 
       token.accessToken = newTokens.accessToken;
       token.refreshToken = newTokens.refreshToken;

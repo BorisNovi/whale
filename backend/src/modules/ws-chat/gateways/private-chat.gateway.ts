@@ -25,16 +25,14 @@ import { SaveMessageService } from '../save-message.service';
 @WebSocketGateway({
   namespace: '/chat',
   cors: {
-    origin: '*',
+    origin: process.env.CORS_ORIGIN.split(','),
     methods: ['GET', 'POST'],
     allowedHeaders: ['Authorization', 'Content-Type'],
     credentials: true,
   },
 })
 @UseFilters(new WsChatExceptionFilter())
-export class PrivateChatGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class PrivateChatGateway implements OnGatewayConnection {
   @WebSocketServer()
   private server: Server;
 
@@ -44,16 +42,11 @@ export class PrivateChatGateway
     private readonly chatsService: ChatsService,
   ) {}
 
-  afterInit() {
-    console.log('Private chat initialized');
-  }
-
   handleConnection(client: Socket) {
-    console.log(`Client connected to private chat: ${client.id}`);
-  }
-
-  handleDisconnect(client: Socket) {
-    console.log(`Client disconnected from private chat: ${client.id}`);
+    const token = client.handshake.auth?.token;
+    if (!token || !this.authService.validateUser(token)) {
+      client.disconnect(true);
+    }
   }
 
   @SubscribeMessage('joinPrivateChat')
@@ -64,11 +57,9 @@ export class PrivateChatGateway
     @ConnectedSocket() client: Socket,
   ): void {
     client.join(chatId);
-    console.log(`User joined private chat: ${chatId}`);
   }
 
   @SubscribeMessage('privateMessage')
-  @UseGuards(WsAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
   async handlePrivateMessage(
     @MessageBody() messageDto: CreateMessageDto,
@@ -78,7 +69,7 @@ export class PrivateChatGateway
       throw new Error('chatId is required in messageDto');
     }
 
-    const token = this.extractToken(client);
+    const token = client.handshake.auth?.token;
     const senderData = await this.authService.getUserData(token);
     const [creatorId, targetUserId] = messageDto.chatId.split(':');
 
@@ -102,10 +93,6 @@ export class PrivateChatGateway
     // Отправляем сообщение
     this.server.to(messageDto.chatId).emit('privateMessage', message);
 
-    console.log(
-      `Message sent in private chat ${messageDto.chatId} from user \x1b[34m${senderData.userId}\x1b[0m to user \x1b[33m${targetUserId}\x1b[0m`,
-    );
-
     // Сохраняем сообщения
     this.saveMessageService.saveMessage(messageDto.chatId, message);
 
@@ -116,11 +103,5 @@ export class PrivateChatGateway
 
     // Уведомляем целевого пользователя о новом сообщении
     this.chatsService.notifyUser(senderData, targetUserData, messageDto.chatId);
-  }
-
-  private extractToken(client: Socket): string {
-    return Array.isArray(client.handshake.query['Authorization'])
-      ? client.handshake.query['Authorization'][0]
-      : (client.handshake.query['Authorization'] as string);
   }
 }

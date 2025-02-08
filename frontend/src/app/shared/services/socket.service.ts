@@ -47,7 +47,7 @@ export class SocketService {
 
   private updateSocketToken(accessToken: string): void {
     if (this.socket) {
-      this.socket.io.opts.query = { Authorization: accessToken };
+      this.socket.auth = { token: accessToken };
 
       this.socket.disconnect();
       this.socket.connect();
@@ -67,7 +67,9 @@ export class SocketService {
 
     const config = {
       url: `${environment.baseUrl}/chat`,
-      options: { query: { Authorization: accessToken } },
+      options: {
+        auth: { token: accessToken },
+      },
     };
 
     this.socket = io(config.url, config.options);
@@ -105,6 +107,17 @@ export class SocketService {
       }
     });
   }
+
+  // socket.on('error', (err) => {
+  //   if (err.message === 'Токен недействителен') {
+  //     refreshAuthToken().then((newToken) => {
+  //       socket.auth = { token: newToken };
+  //       socket.connect();
+  //     }).catch(() => {
+  //
+  //     });
+  //   }
+  // });
 
   /**
    * Register an event on the socket.

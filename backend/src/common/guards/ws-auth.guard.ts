@@ -14,14 +14,11 @@ export class WsAuthGuard implements CanActivate {
   constructor(
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
-  ) {
-    console.log('WS GUARD');
-  }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('CHECK');
     const client: Socket = context.switchToWs().getClient<Socket>();
-    const accessToken = this.extractTokenFromHandshake(client);
+    const accessToken = client.handshake.auth?.token;
 
     if (!accessToken) {
       throw new WsException({
@@ -33,7 +30,6 @@ export class WsAuthGuard implements CanActivate {
     const isValid = await this.authService.validateUser(accessToken);
 
     if (!isValid) {
-      console.log('INVALID TOKEN');
       throw new WsException({
         message: 'Authorization: Invalid access token',
         code: 401,
@@ -41,11 +37,5 @@ export class WsAuthGuard implements CanActivate {
     }
 
     return true;
-  }
-
-  private extractTokenFromHandshake(client: Socket): string | null {
-    return Array.isArray(client.handshake.query['Authorization'])
-      ? client.handshake.query['Authorization'][0]
-      : (client.handshake.query['Authorization'] as string);
   }
 }
