@@ -1,0 +1,65 @@
+.es-sidebar {
+  &__root {
+    height: 100%;
+    display: flex;
+  }
+
+  &__handler {
+    width: 9px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    order: 2;
+    margin-left: -5px;
+    z-index: 8;
+
+    &_open {
+      transition: background-color 0.3s;
+      cursor: col-resize;
+
+      &:hover {
+        background-color: var(--color-monoA-A50);
+
+        .es-sidebar__handler__line {
+          background-color: var(--color-monoA-A200);
+        }
+      }
+    }
+
+    &_open.es-sidebar__handler_mouse-down {
+      background-color: transparent !important;
+      & + .es-sidebar__content {
+        border-color: transparent;
+      }
+
+      .es-sidebar__handler__line {
+        width: 3px;
+        backdrop-filter: blur(20px);
+        background-color: var(--color-secondary-A600);
+      }
+    }
+
+    &__line {
+      width: 1px;
+      height: 100%;
+      transition: background-color 0.3s;
+    }
+  }
+
+  &__content {
+    width: 56px;
+    display: flex;
+    flex-direction: column;
+    order: 1;
+    transition: width 0.2s;
+
+    background-color: var(--color-monoA-A50);
+    border-right: 1px solid var(--color-monoA-A100);
+
+    &_mouse-move {
+      transition: none !important;
+      user-select: none;
+      pointer-events: none;
+    }
+  }
+}

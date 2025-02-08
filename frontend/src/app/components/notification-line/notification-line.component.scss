@@ -1,0 +1,29 @@
+@import "../../../assets/mixins.scss";
+
+.notification-line {
+  &__wrapper {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  &__info {
+    background-color: var(--color-secondary-A900);
+  }
+
+  &__success {
+    background-color: var(--color-success-A900);
+  }
+
+  &__error {
+    background-color: var(--color-warn-A900);
+  }
+
+  &__text {
+    @include text-body200();
+    color: var(--color-monoA-A600);
+  }
+}

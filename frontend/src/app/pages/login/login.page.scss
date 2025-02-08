@@ -1,0 +1,83 @@
+@import "../../../assets/mixins.scss";
+
+:host {
+  height: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.login {
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  &__header {
+    @include text-header();
+    color: var(--color-primary-A800);
+  }
+
+  &__logo {
+    width: 120px;
+    height: 120px;
+    color: var(--color-primary-A800);
+  }
+
+  &__form {
+    width: 100%;
+    box-shadow: inset 0 0 0 2px var(--color-monoA-A500);
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    height: auto;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 7px;
+
+    &__fields {
+
+    }
+
+    &__input {
+      @include text-body100();
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background-color: var(--color-monoB-A500);
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px var(--color-monoA-A500);
+      }
+    }
+
+    &__error {
+      @include text-caption();
+      color: var(--color-warn);
+      margin: 2px 0 0;
+      height: 16px;
+    }
+
+    &__button {
+      @include button-style();
+      @include text-body100();
+      background-color: var(--color-primary-A600);
+
+      @media (hover: hover) {
+        &:hover {
+          background-color: var(--color-primary-A800);
+        }
+      }
+
+      &:active {
+        background-color: var(--color-primary-A800);
+      }
+    }
+  }
+}

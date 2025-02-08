@@ -1,0 +1,123 @@
+<div
+  class="es-sidebar-item__root"
+  (mouseenter)="_onNestedMenuHover($event)"
+  (mouseleave)="_onNestedMenuHover($event)"
+>
+  <div class="es-sidebar-item__wrapper">
+    <button
+      #itemButton
+      [whaleTooltip]="tooltipTemplate"
+      tooltipClass="es-sidebar-item__tooltip"
+      tooltipPosition="right"
+      [tooltipInteractive]="hasChildren$ | async"
+      [tooltipDisabled]="(isOpen$ | async) || disabled"
+      [tabIndex]="disabled ? -1 : 0"
+      (mouseenter)="selectedTooltipItemIndex = 0"
+      (focus)="selectedTooltipItemIndex = 0"
+      (click)="_onItemClick($event)"
+      (keydown)="_onItemKeyDown($event)"
+      (touchstart)="_onItemTouchStart($event)"
+      class="es-sidebar-item__button"
+      [ngClass]="{
+        'es-sidebar-item__button_selected': selected,
+        'es-sidebar-item__button_disabled': disabled,
+      }"
+    >
+      <div
+        #sidebarItemButtonContainer
+        class="es-sidebar-item__button__container"
+      >
+        <span class="es-sidebar-item__button__container__icon">
+          <ng-content select="[icon]"></ng-content>
+        </span>
+        <span
+          class="es-sidebar-item__button__container__text es-body-100"
+          [ngStyle]="{
+            display: (isOpen$ | async) ? 'block' : 'none',
+            margin: inset ? '2px 0' : '',
+            'padding-left': inset ? '36px' : '',
+          }"
+          >{{ text }}</span
+        >
+      </div>
+    </button>
+    <button
+      *ngIf="(isOpen$ | async) && (hasChildren$ | async)"
+      (click)="_onNestedMenuClick($event)"
+      class="es-sidebar-item__button-secondary-action"
+      [tabindex]="!isExpandClickable ? '-1' : '0'"
+      [ngClass]="{
+        'es-sidebar-item__button-secondary-action_disabled': disabled,
+      }"
+      [ngStyle]="{
+        'pointer-events':
+          behaviour === 'hover' || !isExpandClickable ? 'none' : 'all',
+        left: buttonContainerWidth + 'px',
+      }"
+    >
+      <whale-icon
+        [icon]="
+          (isNestedMenuOpen$ | async)
+            ? 'keyboard_arrow_down'
+            : 'keyboard_arrow_right'
+        "
+      ></whale-icon>
+    </button>
+  </div>
+  <div
+    class="es-sidebar-item__collapse"
+    [ngStyle]="{
+      display: (isOpen$ | async) && (hasChildren$ | async) ? '' : 'none',
+    }"
+  >
+    <div
+      class="es-sidebar-item__collapse__wrapper"
+      [ngClass]="{
+        'es-sidebar-item__collapse__wrapper_collapsed': !(
+          isNestedMenuOpen$ | async
+        ),
+      }"
+    >
+      <div #templateContainer class="es-sidebar-item__collapse__wrapper__inner">
+        <ng-container [ngTemplateOutlet]="templateRef"></ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #tooltipTemplate>
+  <div
+    (keydown)="_onTooltipKeydown($event)"
+    class="es-sidebar-item__tooltip__wrapper"
+  >
+    <div #tooltipHeader class="es-sidebar-item__tooltip__header">
+      <button
+        class="es-sidebar-item__tooltip__header__button"
+        *ngIf="isExpandClickable"
+        (click)="_onItemClick($event)"
+      >
+        {{ text }}
+      </button>
+      <div
+        class="es-sidebar-item__tooltip__header__text"
+        *ngIf="!isExpandClickable"
+      >
+        {{ text }}
+      </div>
+    </div>
+
+    <div
+      class="es-sidebar-item__tooltip__children"
+      [ngStyle]="{ display: (hasChildren$ | async) ? 'block' : 'none' }"
+    >
+      <!-- <mat-divider *ngIf="hasChildren$ | async"></mat-divider> -->
+      <div
+        #tooltipChildrenContainer
+        class="es-sidebar-item__tooltip__children__container"
+        [ngStyle]="{ padding: (hasChildren$ | async) ? '8px 0' : '0' }"
+      >
+        <ng-container [ngTemplateOutlet]="templateRef"></ng-container>
+      </div>
+    </div>
+  </div>
+</ng-template>

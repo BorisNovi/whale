@@ -1,0 +1,68 @@
+@let messageList = messagesS();
+@let user = currentUser();
+
+<div class="chat__container">
+  @let firstMessage = messageList[0];
+  @if (firstMessage && false) {
+    <div class="chat__heading">
+      <div class="chat__heading__info">
+        <span
+          class="chat__heading__info__color"
+          [ngStyle]="{ 'background-color': firstMessage.color }"
+        ></span>
+        <span class="chat__heading__info__name">{{
+          firstMessage.username
+        }}</span>
+      </div>
+      <div class="chat__heading__actions"></div>
+    </div>
+  }
+
+  <div class="chat__messages-container" #messagesContainer>
+    @for (message of messageList; track $index) {
+      <div
+        class="chat__message"
+        [ngStyle]="{
+          'align-self':
+            user?.userId === message.userId ? 'flex-end' : 'flex-start',
+        }"
+      >
+        <div
+          class="chat__message__username"
+          [ngClass]="{
+            chat__message__username_interactive:
+              user?.userId !== message.userId,
+          }"
+          (click)="onUsernameClick(message.userId)"
+          (keydown.enter)="onUsernameClick(message.userId)"
+          [tabindex]="user?.userId === message.userId ? '-1' : '0'"
+        >
+          <span
+            class="chat__message__indicator"
+            [ngStyle]="{ 'background-color': message.color }"
+          ></span>
+          <span>{{ message.username }}</span>
+        </div>
+        <div class="chat__message__text">{{ message.text }}</div>
+      </div>
+    }
+  </div>
+  <span class="chat__line"></span>
+  <div class="chat__input-container">
+    <textarea
+      class="chat__input"
+      name="messageInput"
+      [(ngModel)]="newMessage"
+      (keyup.enter)="sendMessage()"
+      placeholder="Enter message..."
+    >
+    </textarea>
+    <button
+      class="chat__button"
+      [disabled]="!newMessage.length"
+      (click)="sendMessage()"
+    >
+      Send
+    </button>
+  </div>
+</div>

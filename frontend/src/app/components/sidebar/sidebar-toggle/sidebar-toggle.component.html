@@ -1,0 +1,13 @@
+<div class="es-sidebar-toggle__root">
+  <es-sidebar-divider></es-sidebar-divider>
+  <button
+    (click)="_onClick()"
+    [ngClass]="'es-sidebar-toggle__button_' + cas.color"
+    [ngStyle]="{ 'margin-left': isOpen ? '7px' : '0' }"
+    class="es-sidebar-toggle__button"
+  >
+    <whale-icon
+      [icon]="isOpen ? 'keyboard_arrow_left' : 'keyboard_arrow_right'"
+    ></whale-icon>
+  </button>
+</div>

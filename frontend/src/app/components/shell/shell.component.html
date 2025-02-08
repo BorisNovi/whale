@@ -1,0 +1,69 @@
+<whale-notification-line></whale-notification-line>
+
+@let privateChats = privateChatData();
+
+<div class="shell__main">
+  <es-sidebar [isOpen]="isOpen" [width]="200">
+    <es-sidebar-menu>
+      <es-sidebar-item text="Global chat" (itemClick)="redirectToGlobalChat()">
+        <whale-icon icon="forum"></whale-icon>
+      </es-sidebar-item>
+    </es-sidebar-menu>
+    <es-sidebar-toggle (openEvent)="isOpen = $event"></es-sidebar-toggle>
+
+    <es-sidebar-scrollable>
+      <es-sidebar-menu>
+        <es-sidebar-item
+          (itemClick)="(null)"
+          [disabled]="false"
+          id="0"
+          text="Private chats"
+        >
+          <whale-icon icon="chat" [badge]="privateChats.length"></whale-icon>
+          @if (privateChats.length) {
+            <ng-template #items>
+              @for (chatData of privateChats; track $index) {
+                @let oppositeUsername =
+                  user?.userId === chatData?.sender?.userId
+                    ? chatData?.target?.username || "Anon"
+                    : chatData?.sender?.username || "Anon";
+                <es-sidebar-item
+                  [text]="oppositeUsername"
+                  (itemClick)="redirectToPrivateChat(chatData.chatId)"
+                  inset
+                ></es-sidebar-item>
+              }
+            </ng-template>
+          }
+        </es-sidebar-item>
+      </es-sidebar-menu>
+    </es-sidebar-scrollable>
+
+    <es-sidebar-spacer></es-sidebar-spacer>
+
+    <es-sidebar-menu>
+      <es-sidebar-item text="Theme" (itemClick)="themeService.switchTheme()">
+        @let theme = themeService.getTheme$() | async;
+        <whale-icon
+          [icon]="
+            theme === 'light'
+              ? 'light_mode'
+              : theme === 'dark'
+                ? 'dark_mode'
+                : 'brightness_auto'
+          "
+        ></whale-icon>
+      </es-sidebar-item>
+    </es-sidebar-menu>
+    <es-sidebar-divider></es-sidebar-divider>
+    <es-sidebar-menu>
+      <es-sidebar-item text="Log out" (itemClick)="logout()">
+        <whale-icon icon="logout"></whale-icon>
+      </es-sidebar-item>
+    </es-sidebar-menu>
+  </es-sidebar>
+
+  <div class="shell__main__outlet">
+    <router-outlet></router-outlet>
+  </div>
+</div>
